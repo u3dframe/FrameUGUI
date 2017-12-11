@@ -32,3 +32,20 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+*.DS_Store
+*.sln.meta
+*.csproj.meta
+
+[Pp]rojectSettings/
+
+/Assets/StreamingAssets/
+/Assets/StreamingAssets*
+/Assets/StreamingAssets.meta
+
+/Assets/Lua/.buildpath
+/Assets/Lua/.project
+/Assets/Lua/.settings/
+
+# 新增自定义忽略文件
+dRoleInfo.*
