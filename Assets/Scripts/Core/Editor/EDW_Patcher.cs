@@ -50,8 +50,9 @@ public class EDW_Patcher : EditorWindow
         vwWindow = null;
     }
 
-//    #region  == Member Attribute ===
-//    #endregion
+    #region  == Member Attribute ===
+	Kernel.CfgVersion _cfgVer;
+    #endregion
 
     #region  == EditorWindow Func ===
 
@@ -82,6 +83,8 @@ public class EDW_Patcher : EditorWindow
     #region  == Self Func ===
     void Init()
     {
+		_cfgVer = Kernel.CfgVersion.instance;
+		_cfgVer.LoadDefault ();
     }
 
     void OnUpdate()
@@ -113,7 +116,7 @@ public class EDW_Patcher : EditorWindow
 	#endregion
 
 	void _Draw(){
-		Kernel.CfgVersion _cfgVer = Kernel.CfgVersion.instance;
+		
 		int curX = 10;
 		int curY = 10;
 		int height = (int)(position.height - curY - 10);

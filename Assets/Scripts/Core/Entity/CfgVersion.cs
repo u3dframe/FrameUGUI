@@ -164,6 +164,9 @@ namespace Kernel
 		/// </summary>
 		public void LoadDefault(){
 			Load (m_defFileName);
+
+			m_lastResVerCode = m_resVerCode;
+			RefreshResVerCode ();
 		}
 
 		/// <summary>
@@ -196,9 +199,9 @@ namespace Kernel
 			
 			if (string.IsNullOrEmpty (other.m_resVerCode))
 				return false;
-			
+			// A.CompareTo(B) 比较B在A的前-1,后1,或相同0
 			int v = other.m_resVerCode.CompareTo (this.m_resVerCode);
-			if (v > 1 && other.IsUpdate(true)) {
+			if (v < 0 && other.IsUpdate(true)) {
 				return true;
 			}
 
@@ -224,17 +227,10 @@ namespace Kernel
 		}
 
 		static CfgVersion _instance;
-		/// <summary>
-		/// 此单例在打包的时候用
-		/// </summary>
 		static public CfgVersion instance{
 			get{ 
 				if (_instance == null) {
 					_instance = new CfgVersion ();
-					_instance.LoadDefault ();
-
-					_instance.m_lastResVerCode = _instance.m_resVerCode;
-					_instance.RefreshResVerCode ();
 				}
 				return _instance;
 			}

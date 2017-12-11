@@ -37,12 +37,21 @@ class MgrUpdate : MonoBehaviour {
 	bool m_isRunning = false;
 	bool m_isInit = false;
 
-	long downCurr = 0,downSize = 0;
+	long nCurr = 0,nSize = 0;
 
 	Dictionary<string,string> m_dicLanguage = new Dictionary<string, string>();
 
+	bool m_isValidVersion = true;
+	bool m_isUnZip = true;
+
+	List<AssetBundle> m_uiAbs = new List<AssetBundle> ();
+
+	float m_limitUpTime = 1,m_currTime = 0;
+
 	// Use this for initialization
-	void Awake () {
+	public void Init (bool isValidVer = true,bool isUnZip = true) {
+		this.m_isValidVersion = isValidVer;
+		this.m_isUnZip = isUnZip;
 		_Init ();
 	}
 	
@@ -50,7 +59,14 @@ class MgrUpdate : MonoBehaviour {
 	void Update () {
 		if (!m_isRunning)
 			return;
-		
+
+		if (m_limitUpTime > 0.02f) {
+			m_currTime += Time.deltaTime;
+			if (m_currTime < m_limitUpTime)
+				return;
+			m_currTime -= m_limitUpTime;
+		}
+
 		switch (m_state) {
 		case State.Init:
 			_ST_Init ();
@@ -112,7 +128,40 @@ class MgrUpdate : MonoBehaviour {
 		}
 	}
 
+	string _GetLanguage(string key){
+		if (m_dicLanguage.ContainsKey (key))
+			return m_dicLanguage [key];
+		return key;
+	}
+
 	void _LoadUpdateUI(){
+		System.Action<AssetBundle> _call = (ab) => {
+			ab.LoadAllAssets();
+			m_uiAbs.Add(ab);
+		};
+
+		// _LoadAB ("", _call); 图集
+		// _LoadAB ("", _call); 字体
+		// 加载UI
+		// _LoadAB ("", (ab)=>{
+			// GameObject gobj = ab.LoadAsset<GameObject>("name");
+			// GameObject.Instantiate(gobj).GetComponent<T>();
+		// });
+
+		for (int i = 0; i < m_uiAbs.Count; i++) {
+			m_uiAbs [i].Unload (false);
+		}
+		m_uiAbs.Clear ();
+	}
+
+	void _LoadAB(string fn,System.Action<AssetBundle> callFunc = null){
+		string _fp = Kernel.GameFile.GetFilePath (fn);
+		AssetBundle _ab = AssetBundle.LoadFromFile (_fp);
+		if (_ab != null) {
+			if (callFunc != null) {
+				callFunc (_ab);
+			}
+		}
 	}
 
 	void _ST_Init(){
@@ -125,6 +174,11 @@ class MgrUpdate : MonoBehaviour {
 	}
 
 	void _ST_UnZipResource(){
+		if (!m_isUnZip) {
+			m_state = State.CheckNet;
+			return;
+		}
+		// zip 解压操作 ????
 		m_state = State.CheckNet;
 	}
 
@@ -134,8 +188,11 @@ class MgrUpdate : MonoBehaviour {
 			m_state = State.Error_Net;
 			return;
 		}
-
-		m_state = State.CheckVersion;
+		if (m_isValidVersion) {
+			m_state = State.CheckVersion;
+		} else {
+			m_state = State.Completed;
+		}
 	}
 
 	void _ST_CheckAndDown(){
@@ -164,13 +221,13 @@ class MgrUpdate : MonoBehaviour {
 	}
 
 	void _CallDownfiles(long curr,long target){
-		this.downCurr = curr;
-		this.downSize = target;
+		this.nCurr = curr;
+		this.nSize = target;
 	}
 
 	void _ST_Completed(){
-		m_isRunning = false;
 		// 进入游戏
+		m_isRunning = false;
 	}
 
 	void _ReState(bool isWaitCommand = false){
@@ -204,7 +261,9 @@ class MgrUpdate : MonoBehaviour {
 		case State.DeleteOldFiles:
 			break;
 		case State.DownFiles:
-			Debug.Log (downCurr + " == " + downSize);
+			Debug.Log (nCurr + " == " + nSize);
+			break;
+		case State.Completed:
 			break;
 		case State.Error_UnZip_Init:
 			break;
@@ -219,5 +278,19 @@ class MgrUpdate : MonoBehaviour {
 		default:
 			break;
 		}
+	}
+
+	string _GetSizeMB(float size){
+		float fKB = size / 1024f;
+		float fMB = fKB / 1024f;
+		if (fMB > 1.0f) {
+			return string.Format ("{0:00}MB", fMB);
+		}
+
+		if (fKB > 1.0f) {
+			return string.Format ("{0:00}KB", fKB);
+		}
+
+		return string.Format ("{0:00}B", size);
 	}
 }

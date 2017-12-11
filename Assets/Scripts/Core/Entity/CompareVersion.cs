@@ -224,6 +224,7 @@ namespace Kernel
 			_ExcCBDownFile ();
 
 			m_state = State.PreDownFiles;
+			m_isDoDownFiles = m_nSizeAll <= 0;
 		}
 
 		void _ST_PreDownFiles(){
@@ -294,10 +295,10 @@ namespace Kernel
 				nState = 6;
 				break;
 			case State.DownFiles:
-				if (m_curr.m_state == CompareFiles.State.DeleteFiles) {
-					nState = 7;
-				} else {
+				if (m_curr.m_state == CompareFiles.State.DownFiles) {
 					nState = 8;
+				} else {
+					nState = 7;
 				}
 				break;
 			case State.Error_Net:

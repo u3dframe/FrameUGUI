@@ -38,6 +38,9 @@ namespace Kernel
 		// 临时存放所有生成的文件(ab,txt等，可以进行Zip压缩，最后将生成zip文件或copy的所以文件再拷贝到流文件夹下)
 		static public readonly string m_dirResCache = string.Format ("{0}/../../GameCache/{1}/", Application.dataPath, m_curPlatform);
 
+		// 流文件夹下的 zip 压缩文件
+		static public readonly string m_fpZip = string.Format ("{0}resource.zip", m_dirStreaming);
+
 		// 统一分割符号
 		static public string ReDirSeparator(string fp){
 			return fp.Replace ('\\', '/');
