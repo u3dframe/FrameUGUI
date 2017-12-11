@@ -44,19 +44,7 @@ namespace Kernel
 		public System.Exception m_error{ get; private set;}
 
 		// 下载地址
-		string _m_url = "";
-		public string m_url{
-			get{ return _m_url;}
-			set{
-				_m_url = value;
-				if (!string.IsNullOrEmpty(_m_url)) {
-					int _index = _m_url.LastIndexOf("/");
-					if (_index == _m_url.Length - 1) {
-						_m_url = _m_url.Substring (0, _index);
-					}
-				}
-			}
-		}
+		public string m_url = "";
 
 		string m_realUrl = "";
 		WWW m_www = null;
@@ -98,7 +86,13 @@ namespace Kernel
 					return;
 				}
 
-				m_realUrl = string.Format ("{0}/{1}?time={2}", this.m_url,this.m_filePath,System.DateTime.Now.Ticks);
+				int _index = m_url.LastIndexOf("/");
+				string _fmt = "{0}/{1}?time={2}";
+				if (_index == m_url.Length - 1) {
+					_fmt = "{0}{1}?time={2}";
+				}
+
+				m_realUrl = string.Format (_fmt, this.m_url,this.m_filePath,System.DateTime.Now.Ticks);
 				m_www = new WWW(m_realUrl);
 
 				m_state = State.DownLoad;
