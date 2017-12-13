@@ -32,13 +32,16 @@ namespace Kernel.Core{
 			return false;
 		}
 
+		static bool _IsLuaFile(string fp){
+			return fp.EndsWith (".lua", System.StringComparison.OrdinalIgnoreCase);
+		}
+
 		static void _CopyFiles(string dirSource,string dirDest,bool isInfo, List<ResInfo> list){
 			if (isInfo) {
 				if (list == null)
 					list = new List<ResInfo> ();
 			}
 
-			GameFile.DeleteFolder (dirDest);
 			GameFile.CreateFolder (dirDest);
 
 			EL_Path.Clear ();
@@ -56,6 +59,10 @@ namespace Kernel.Core{
 
 			float nLens = EL_Path.files.Count;
 			int nIndex = 0;
+			bool isLuaFile = false;
+
+			string _fmtFile = "正在Copy文件{0}/{1}";
+			string _fmtLuaFile = "正在Copy Lua文件{0}/{1}";
 
 			foreach (string fp in EL_Path.files) {
 				nIndex++;
@@ -63,19 +70,29 @@ namespace Kernel.Core{
 				if (isInfo && _IsIgnoreFile (fp))
 					continue;
 
-				indexRelative = fp.IndexOf (GameFile.m_curPlatform);
-				if (indexRelative < 0)
-					continue;
+				isLuaFile = _IsLuaFile (fp);
 
-				EditorUtility.DisplayProgressBar ("Copy",string.Format("正在Copy文件{0}/{1}",nIndex,nLens), nIndex / nLens);
+				if (isLuaFile) {
+					_fpRelative = fp.Replace (dirSource, "Lua");
+				}else{
+					indexRelative = fp.IndexOf (GameFile.m_curPlatform);
+					if (indexRelative < 0)
+						continue;
+					
+					_fpRelative = fp.Substring(indexRelative + lensRelative + 1);
+				}
 
-				_fpRelative = fp.Substring(indexRelative + lensRelative + 1);
+				EditorUtility.DisplayProgressBar (string.Format(isLuaFile ? _fmtLuaFile : _fmtFile,nIndex,nLens),_fpRelative, nIndex / nLens);
+
 				_fpdest = string.Concat (dirDest, _fpRelative);
 
 				GameFile.CreateFolder (_fpdest);
 
 				_fInfo = new FileInfo (fp);
 				_fInfo.CopyTo (_fpdest, true);
+
+				if (isLuaFile)
+					_EncodeLuaFile (_fpdest, _fpdest, ref _fInfo);
 
 				if (isInfo) {
 					_fLens = (int)_fInfo.Length;
@@ -88,9 +105,17 @@ namespace Kernel.Core{
 			EL_Path.Clear ();
 		}
 
+		static void _EncodeLuaFile(string srcFile, string outFile,ref FileInfo fInfo) {
+		}
+
 		static void _Copy2Cache(List<ResInfo> list){
+			GameFile.DeleteFolder (GameFile.m_dirResCache);
 			_CopyFiles (GameFile.m_dirRes, GameFile.m_dirResCache, true, list);
 			// lua文件 可先byte，删除原来文件，最后在生成resInfo
+			string _destLua = string.Concat(GameFile.m_dirResCache,"Lua/");
+			_destLua = _destLua.Replace ("\\", "/");
+			GameFile.DeleteFolder (_destLua);
+			_destLua = GameFile.m_dirResCache;
 		}
 
 		static void _MakeNewFilelist(List<ResInfo> list){
@@ -109,7 +134,9 @@ namespace Kernel.Core{
 			}
 		}
 
-		static void _ZipFiles(){
+		static void _ZipFiles(List<ResInfo> list){
+			GameFile.DeleteFile (GameFile.m_fpZipCache);
+			GameFile.CreateFolder (GameFile.m_fpZipCache);
 		}
 
 		static void _ToSteamingAssets(bool isZip){
@@ -130,9 +157,12 @@ namespace Kernel.Core{
 			_Copy2Cache (m_list);
 			_MakeNewFilelist (m_list);
 			if (isZip) {
-				_ZipFiles ();
+				_ZipFiles (m_list);
 			}
 			_ToSteamingAssets (isZip);
+
+			m_list.Clear ();
+			GameFile.DeleteFolder (GameFile.m_dirResCache);
 
 			EditorUtility.ClearProgressBar ();
 		}

@@ -58,7 +58,7 @@ namespace Kernel
 		static public void DeleteFolder(string fp){
 			string _fd = Path.GetDirectoryName (fp);
 			if (Directory.Exists (_fd)) {
-				Directory.Delete (_fd);
+				Directory.Delete (_fd,true);
 			}
 		}
 

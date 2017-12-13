@@ -13,6 +13,11 @@ namespace Kernel.Core{
 	/// </summary>
 	public static class EL_Path {
 
+		static string[] m_ignoreFiles = {
+			".manifest",
+			".meta",
+		};
+
 		/// <summary>
 		/// 文件夹地址
 		/// </summary>
@@ -23,6 +28,15 @@ namespace Kernel.Core{
 		/// </summary>
 		static public List<string> files = new List<string>();
 
+		static bool _IsIgnoreFile(string fp){
+			for (int i = 0; i < m_ignoreFiles.Length; i++) {
+				if(fp.Contains (m_ignoreFiles [i])){
+					return true;
+				}
+			}
+			return false;
+		}
+
 		/// <summary>
 		/// 取得该路径下面的-所有文件，以及该下面的所以文件夹
 		/// </summary>
@@ -31,8 +45,7 @@ namespace Kernel.Core{
 			string[] names = Directory.GetFiles(path);
 			string[] dirs = Directory.GetDirectories(path);
 			foreach (string filename in names) {
-				string ext = Path.GetExtension(filename);
-				if (ext.Equals(".meta")) continue;
+				if(_IsIgnoreFile(filename)) continue;
 				files.Add(filename.Replace('\\', '/'));
 			}
 			foreach (string dir in dirs) {

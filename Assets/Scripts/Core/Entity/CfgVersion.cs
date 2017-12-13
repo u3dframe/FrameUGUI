@@ -196,15 +196,15 @@ namespace Kernel
 			if (string.IsNullOrEmpty (m_resVerCode))
 				return false;
 
-			if (string.IsNullOrEmpty (m_urlVersion) || URL_HEAD.Equals(m_urlVersion))
+			if (string.IsNullOrEmpty (m_urlVersion) || URL_HEAD.Equals(m_urlVersion) || m_urlVersion.IndexOf(URL_HEAD) != 0)
 				return false;
 
-			if (string.IsNullOrEmpty (m_urlFilelist) || URL_HEAD.Equals(m_urlFilelist))
+			if (string.IsNullOrEmpty (m_urlFilelist) || URL_HEAD.Equals(m_urlFilelist) || m_urlFilelist.IndexOf(URL_HEAD) != 0)
 				return false;
 			
 			if (isCheckResUrl) {
 				// 外网要检测，本地不需要检测
-				if (string.IsNullOrEmpty (m_urlRes) || URL_HEAD.Equals (m_urlRes))
+				if (string.IsNullOrEmpty (m_urlRes) || URL_HEAD.Equals (m_urlRes) || m_urlRes.IndexOf(URL_HEAD) != 0)
 					return false;
 			}
 

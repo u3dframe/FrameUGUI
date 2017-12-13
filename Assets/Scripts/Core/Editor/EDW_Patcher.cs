@@ -51,7 +51,16 @@ public class EDW_Patcher : EditorWindow
     }
 
     #region  == Member Attribute ===
-	Kernel.CfgVersion _cfgVer;
+	Kernel.CfgVersion _m_cfgVer;
+	Kernel.CfgVersion m_cfgVer{
+		get{
+			if (_m_cfgVer == null) {
+				_m_cfgVer = Kernel.CfgVersion.instance;
+				_m_cfgVer.LoadDefault4EDT ();
+			}
+			return _m_cfgVer;
+		}
+	}
 
 	bool m_isSaveVer = false;
     #endregion
@@ -85,8 +94,6 @@ public class EDW_Patcher : EditorWindow
     #region  == Self Func ===
     void Init()
     {
-		_cfgVer = Kernel.CfgVersion.instance;
-		_cfgVer.LoadDefault4EDT ();
     }
 
     void OnUpdate()
@@ -118,7 +125,8 @@ public class EDW_Patcher : EditorWindow
 	#endregion
 
 	void _Draw(){
-		
+		Init ();
+
 		int curX = 10;
 		int curY = 10;
 		int height = (int)(position.height - curY - 10);
@@ -126,39 +134,39 @@ public class EDW_Patcher : EditorWindow
 
 		NextLine (ref curX, ref curY, 5);
 		GUI.Label (CreateRect (ref curX, curY,32, 25), "平台:");
-		_cfgVer.m_platformType = EditorGUI.TextField (CreateRect (ref curX, curY, 50), _cfgVer.m_platformType);
+		m_cfgVer.m_platformType = EditorGUI.TextField (CreateRect (ref curX, curY, 50), m_cfgVer.m_platformType);
 
 		GUI.Label (CreateRect (ref curX, curY,32, 25), "语言:");
-		_cfgVer.m_language = EditorGUI.TextField (CreateRect (ref curX, curY, 50), _cfgVer.m_language);
+		m_cfgVer.m_language = EditorGUI.TextField (CreateRect (ref curX, curY, 50), m_cfgVer.m_language);
 
 		GUI.Label (CreateRect (ref curX, curY,60, 25), "游戏版本:");
-		_cfgVer.m_gameVerCode = EditorGUI.TextField (CreateRect (ref curX, curY, 80), _cfgVer.m_gameVerCode);
+		m_cfgVer.m_gameVerCode = EditorGUI.TextField (CreateRect (ref curX, curY, 80), m_cfgVer.m_gameVerCode);
 
 		GUI.Label (CreateRect (ref curX, curY,70, 25), "Svn版本号:");
-		_cfgVer.m_svnVerCode = EditorGUI.TextField (CreateRect (ref curX, curY, 100), _cfgVer.m_svnVerCode);
+		m_cfgVer.m_svnVerCode = EditorGUI.TextField (CreateRect (ref curX, curY, 100), m_cfgVer.m_svnVerCode);
 
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,76, 25), "上次资源版本:");
-		EditorGUI.LabelField (CreateRect (ref curX, curY, 100), _cfgVer.m_lastResVerCode);
+		EditorGUI.LabelField (CreateRect (ref curX, curY, 100), m_cfgVer.m_lastResVerCode);
 		
 		GUI.Label (CreateRect (ref curX, curY,76, 25), "新资源版本号:");
-		EditorGUI.LabelField (CreateRect (ref curX, curY, 100), _cfgVer.m_resVerCode);
+		EditorGUI.LabelField (CreateRect (ref curX, curY, 100), m_cfgVer.m_resVerCode);
 		
 		if (GUI.Button (CreateRect (ref curX, curY, 110), "刷新新版本号")) {
-			_cfgVer.RefreshResVerCode ();
+			m_cfgVer.RefreshResVerCode ();
 		}
 
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "version地址:");
-		_cfgVer.m_urlVersion = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), _cfgVer.m_urlVersion);
+		m_cfgVer.m_urlVersion = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlVersion);
 
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "filelist地址:");
-		_cfgVer.m_urlFilelist = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), _cfgVer.m_urlFilelist);
+		m_cfgVer.m_urlFilelist = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlFilelist);
 
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "补丁下载地址:");
-		_cfgVer.m_urlRes = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), _cfgVer.m_urlRes);
+		m_cfgVer.m_urlRes = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlRes);
 
 		NextLine (ref curX, ref curY, 30);
 
@@ -185,6 +193,16 @@ public class EDW_Patcher : EditorWindow
 	}
 
 	void _SaveVersion(){
+		if (!m_cfgVer.IsUpdate (true)) {
+			EditorUtility.DisplayDialog ("Tips", "请输入正确的[version地址,filelist地址,补丁下载地址]!!!", "Okey");
+			return;
+		}
+
 		m_isSaveVer = true;
+		m_cfgVer.SaveDefault ();
+	}
+
+	void _ZipAllAssets(){
+		Kernel.Core.EL_Patcher.BuildAll (true);
 	}
 }
