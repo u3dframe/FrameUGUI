@@ -78,14 +78,26 @@ namespace Kernel.ALG
 			return crc ^ ~0U;
 		}
 
-		public static string GetCRC32(byte[] buf,int size){
+		static public string GetCRC32(byte[] buf,int size){
 			uint crc = _CRC32 (buf, size);
 			// Convert.ToString (crc, 16).ToUpper ();
 			return string.Format ("{0:X000}", crc).ToUpper();
 		}
 
-		public static string GetCRC32(byte[] buf){
+		static public string GetCRC32(byte[] buf){
 			return GetCRC32 (buf, buf.Length);
+		}
+
+		static public string GetCRC32(FileStream stream){
+			using (stream) {
+				byte[] buffer = new byte[stream.Length];
+				stream.Read (buffer, 0, buffer.Length);
+				return GetCRC32 (buffer);
+			}
+		}
+
+		static public string GetCRC32(FileInfo fInfo){
+			return GetCRC32 (fInfo.OpenRead ());
 		}
 	}
 }

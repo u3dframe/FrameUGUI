@@ -40,6 +40,10 @@ namespace Kernel
 			Init (row);
 		}
 
+		public ResInfo(string resName,string compareCode,string resPackage,int size){
+			Init (resName,compareCode,resPackage,size);
+		}
+
 		int Str2Int(string str){
 			int ret = 0;
 			int.TryParse (str, out ret);

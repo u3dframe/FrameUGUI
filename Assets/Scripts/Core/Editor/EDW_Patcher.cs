@@ -52,6 +52,8 @@ public class EDW_Patcher : EditorWindow
 
     #region  == Member Attribute ===
 	Kernel.CfgVersion _cfgVer;
+
+	bool m_isSaveVer = false;
     #endregion
 
     #region  == EditorWindow Func ===
@@ -165,29 +167,24 @@ public class EDW_Patcher : EditorWindow
 			botY = curY;
 		}
 
-		if (GUI.Button (CreateRect (ref curX, botY, 100, 30), "生成Filelist")) {
+		if (GUI.Button (CreateRect (ref curX, botY, 100,30), "保存版本信息")) {
+			_SaveVersion ();
 		}
 
-		if (GUI.Button (CreateRect (ref curX, botY, 100,30), "保存版本信息")) {
-		}
+		if (!m_isSaveVer)
+			return;
 
 		if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Zip(全部)")) {
 		}
 
-		if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Zip(补丁文件)")) {
-		}
+		// if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Zip(补丁文件)")) {
+		// }
 
 		// if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Zip压缩(Mini)")) {
 		// }
 	}
 
-	void _CopyToCahce(){
-		// Kernel.GameFile.m_dirResCache;
-	}
-
-	void _MakeFilelist(){
-	}
-
 	void _SaveVersion(){
+		m_isSaveVer = true;
 	}
 }

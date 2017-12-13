@@ -18,11 +18,11 @@ namespace Kernel
 		static public readonly string platformWindows = "Windows";
 
 		#if UNITY_ANDROID
-		static readonly string m_curPlatform = platformAndroid;
+		static public readonly string m_curPlatform = platformAndroid;
 		#elif UNITY_IOS
-		static readonly string m_curPlatform = platformIOS;
+		static public readonly string m_curPlatform = platformIOS;
 		#else
-		static readonly string m_curPlatform = platformWindows;
+		static public readonly string m_curPlatform = platformWindows;
 		#endif
 
 		// 流文件夹
@@ -38,7 +38,8 @@ namespace Kernel
 		// 临时存放所有生成的文件(ab,txt等，可以进行Zip压缩，最后将生成zip文件或copy的所以文件再拷贝到流文件夹下)
 		static public readonly string m_dirResCache = string.Format ("{0}/../../GameCache/{1}/", Application.dataPath, m_curPlatform);
 
-		// 流文件夹下的 zip 压缩文件
+		// zip 压缩文件
+		static public readonly string m_fpZipCache = string.Format ("{0}resource.zip", m_dirResCache);
 		static public readonly string m_fpZip = string.Format ("{0}resource.zip", m_dirStreaming);
 
 		// 统一分割符号
@@ -54,13 +55,20 @@ namespace Kernel
 			}
 		}
 
+		static public void DeleteFolder(string fp){
+			string _fd = Path.GetDirectoryName (fp);
+			if (Directory.Exists (_fd)) {
+				Directory.Delete (_fd);
+			}
+		}
+
 		// 取得路径
 		static public string GetFilePath(string fn){
-			return string.Format ("{0}{1}", m_dirRes, fn);
+			return string.Concat (m_dirRes, fn);
 		}
 
 		static public string GetStreamingFilePath(string fn){
-			return string.Format ("{0}{1}", m_dirStreaming, fn);
+			return string.Concat (m_dirStreaming, fn);
 		}
 
 		static public void DeleteFile(string fn){
