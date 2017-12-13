@@ -34,8 +34,11 @@ namespace Kernel
 		// 基础语言类型
 		public string m_language = "";
 
-		// 版本地址(下载版本和文件列表的地址)
+		// 版本地址
 		public string m_urlVersion = "";
+
+		// 文件列表地址
+		public string m_urlFilelist = "";
 
 		// 下载资源的地址
 		public string m_urlRes = "";
@@ -52,6 +55,7 @@ namespace Kernel
 		const string m_kPlatformType = "platform";
 		const string m_kLanguage = "language";
 		const string m_kUrlVersion = "url";
+		const string m_kUrlFilelist = "url_fl";
 		const string m_kUrlRes = "downurl";
 
 		public string urlPath4Ver{
@@ -62,7 +66,7 @@ namespace Kernel
 
 		public string urlPath4FileList{
 			get{
-				return string.Format (_FmtUrlPath (m_urlVersion),CfgFileList.m_defFileName);
+				return string.Format (_FmtUrlPath (m_urlFilelist),CfgFileList.m_defFileName);
 			}
 		}
 
@@ -76,6 +80,7 @@ namespace Kernel
 			m_language = "CN";
 			m_urlVersion = URL_HEAD;
 			m_urlRes = URL_HEAD;
+			m_urlFilelist = URL_HEAD;
 		}
 
 		public void Load(string fn){
@@ -118,6 +123,9 @@ namespace Kernel
 				case m_kUrlVersion:
 					m_urlVersion = _arrs [1];
 					break;
+				case m_kUrlFilelist:
+					m_urlFilelist = _arrs [1];
+					break;
 				case m_kUrlRes:
 					m_urlRes = _arrs [1];
 					break;
@@ -145,6 +153,7 @@ namespace Kernel
 						writer.WriteLine (string.Format (_fmt, m_kPlatformType, m_platformType));
 						writer.WriteLine (string.Format (_fmt, m_kLanguage, m_language));
 						writer.WriteLine (string.Format (_fmt, m_kUrlVersion, m_urlVersion));
+						writer.WriteLine (string.Format (_fmt, m_kUrlFilelist, m_urlFilelist));
 						writer.WriteLine (string.Format (_fmt, m_kUrlRes, m_urlRes));
 					}
 				}
@@ -164,7 +173,13 @@ namespace Kernel
 		/// </summary>
 		public void LoadDefault(){
 			Load (m_defFileName);
+		}
 
+		/// <summary>
+		/// 加载默认的资源 4 Editor
+		/// </summary>
+		public void LoadDefault4EDT(){
+			LoadDefault ();
 			m_lastResVerCode = m_resVerCode;
 			RefreshResVerCode ();
 		}
@@ -184,6 +199,9 @@ namespace Kernel
 			if (string.IsNullOrEmpty (m_urlVersion) || URL_HEAD.Equals(m_urlVersion))
 				return false;
 
+			if (string.IsNullOrEmpty (m_urlFilelist) || URL_HEAD.Equals(m_urlFilelist))
+				return false;
+			
 			if (isCheckResUrl) {
 				// 外网要检测，本地不需要检测
 				if (string.IsNullOrEmpty (m_urlRes) || URL_HEAD.Equals (m_urlRes))
@@ -199,9 +217,9 @@ namespace Kernel
 			
 			if (string.IsNullOrEmpty (other.m_resVerCode))
 				return false;
-			// A.CompareTo(B) 比较B在A的前-1,后1,或相同0
+			// A.CompareTo(B) 比较A在B的前-1,后1,或相同0
 			int v = other.m_resVerCode.CompareTo (this.m_resVerCode);
-			if (v < 0 && other.IsUpdate(true)) {
+			if (v > 0 && other.IsUpdate(true)) {
 				return true;
 			}
 
@@ -223,6 +241,7 @@ namespace Kernel
 			this.m_platformType = other.m_platformType;
 			this.m_language = other.m_language;
 			this.m_urlVersion = other.m_urlVersion;
+			this.m_urlFilelist = other.m_urlFilelist;
 			this.m_urlRes = other.m_urlRes;
 		}
 

@@ -48,21 +48,25 @@ namespace Kernel
 
 		public void Init(string row){
 			string[] _arrs = row.Split (",".ToCharArray (), System.StringSplitOptions.None);
-			if (_arrs.Length < 4)
+			if (_arrs.Length < 3)
 				return;
-			Init (_arrs [0], _arrs [1], _arrs [3], Str2Int(_arrs [2]));
+			string resPackage = "";
+			if (_arrs.Length > 3)
+				resPackage = _arrs [3];
+			
+			Init (_arrs [0], _arrs [1],resPackage, Str2Int(_arrs [2]));
 		}
 
 		public void Init(string resName,string compareCode,string resPackage,int size){
 			this.m_resName = resName;
 			this.m_compareCode = compareCode;
-			this.m_resPackage = resPackage;
+			this.m_resPackage = resPackage == null ? "" : resPackage;
 			this.m_size = size;
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("{0},{1},{2},{3}",m_resName,m_compareCode,m_size,m_resPackage);
+			return string.Concat (m_resName,",",m_compareCode,",",m_size,",",m_resPackage);
 		}
 
 		public bool IsSame(ResInfo other){
@@ -70,6 +74,13 @@ namespace Kernel
 				return false;
 			int v = string.Compare(other.m_compareCode,m_compareCode,true);
 			return v == 0;
+		}
+
+		public void CloneFromOther(ResInfo other){
+			this.m_resName = other.m_resName;
+			this.m_compareCode = other.m_compareCode;
+			this.m_resPackage = other.m_resPackage;
+			this.m_size = other.m_size;
 		}
 	}
 }

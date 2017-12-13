@@ -30,7 +30,13 @@ namespace Kernel
 
 		public string m_content{ get; private set; }
 
+		bool m_isDown = false;
+
 		public CfgFileList(){
+		}
+
+		public CfgFileList(bool isDown){
+			this.m_isDown = isDown;
 		}
 
 		public void Load(string fn){
@@ -49,7 +55,11 @@ namespace Kernel
 
 			string[] _vals = content.Split ("\r\n\t".ToCharArray (), System.StringSplitOptions.RemoveEmptyEntries);
 			for (int i = 0; i < _vals.Length; i++) {
-				Add (new ResInfo (_vals[i]));
+				if (this.m_isDown) {
+					Add (new DownLoadFile (_vals [i]));
+				} else {
+					Add (new ResInfo (_vals [i]));
+				}
 			}
 		}
 
@@ -111,6 +121,21 @@ namespace Kernel
 
 			_m_dicFiles.Clear ();
 			m_lFiles.Clear ();
+		}
+
+		public void CloneFromOther(CfgFileList other){
+			this.Clear ();
+
+			this.m_filePath = other.m_filePath;
+			this.m_content = other.m_content;
+
+			ResInfo _info;
+
+			for (int i = 0; i < other.m_lFiles.Count; i++) {
+				_info = other.m_lFiles [i];
+				this.m_lFiles.Add (_info);
+				this._m_dicFiles.Add (_info.m_resName,_info);
+			}
 		}
 
 		static CfgFileList _instance;

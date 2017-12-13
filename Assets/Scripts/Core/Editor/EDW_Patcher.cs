@@ -84,7 +84,7 @@ public class EDW_Patcher : EditorWindow
     void Init()
     {
 		_cfgVer = Kernel.CfgVersion.instance;
-		_cfgVer.LoadDefault ();
+		_cfgVer.LoadDefault4EDT ();
     }
 
     void OnUpdate()
@@ -149,6 +149,10 @@ public class EDW_Patcher : EditorWindow
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "version地址:");
 		_cfgVer.m_urlVersion = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), _cfgVer.m_urlVersion);
+
+		NextLine (ref curX, ref curY, 30);
+		GUI.Label (CreateRect (ref curX, curY,80, 25), "filelist地址:");
+		_cfgVer.m_urlFilelist = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), _cfgVer.m_urlFilelist);
 
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "补丁下载地址:");

@@ -40,15 +40,24 @@ namespace Kernel
 
 		public string m_newContent{ get; private set; }
 
-		CfgFileList m_cfgOld = new CfgFileList ();
-		CfgFileList m_cfgNew = new CfgFileList ();
+		CfgFileList _m_cfgOld = new CfgFileList (true);
+		CfgFileList m_cfgNew = new CfgFileList (true);
 
+		public CfgFileList m_cfgOld{ get { return _m_cfgOld; } }
+
+		// 删除的
 		Dictionary<string,ResInfo> m_deletes = new Dictionary<string, ResInfo> ();
 		Dictionary<string,DownLoadFile> m_updates = new Dictionary<string, DownLoadFile> ();
-
 		List<DownLoadFile> m_lNeed = new List<DownLoadFile> ();
 
+		// 限定正在下载的个数
+		int m_nLimitDowning = 10;
+		List<DownLoadFile> m_lDowning = new List<DownLoadFile> ();
+		List<DownLoadFile> m_lDownError = new List<DownLoadFile> ();
+
 		List<string> m_lKeys = new List<string> ();
+		List<DownLoadFile> m_lRemoveDownings = new List<DownLoadFile> ();
+		string m_key = "";
 		DownLoadFile m_dwf;
 
 		bool m_isRunning = true;
@@ -63,11 +72,7 @@ namespace Kernel
 			}
 		}
 
-		public bool isFinished{
-			get{
-				return m_state == State.Finished;
-			}
-		}
+		public bool isFinished{ get{ return m_state == State.Finished; } }
 
 		// 下载文件的状态通知 参数:值(当前文件对象)
 		public System.Action<DownLoadFile> m_callDownFile;
@@ -88,6 +93,9 @@ namespace Kernel
 			m_lKeys.Clear ();
 
 			m_lNeed.Clear ();
+			m_lDowning.Clear ();
+			m_lDownError.Clear ();
+			m_lRemoveDownings.Clear ();
 		}
 
 		public void Init (string newFiles, string newUrl)
@@ -106,6 +114,22 @@ namespace Kernel
 			this.m_newContent = newFiles;
 
 			this.m_cfgOld.Init (oldFiles);
+
+			this.m_cfgNew.Init (newFiles);
+
+			this._Compare ();
+
+			m_state = State.Init;
+		}
+
+		public void Init(CfgFileList oldFiles, string newFiles, string newUrl){
+			Clear ();
+
+			this.m_newUrl = newUrl;
+
+			this.m_newContent = newFiles;
+
+			this.m_cfgOld.CloneFromOther(oldFiles);
 
 			this.m_cfgNew.Init (newFiles);
 
@@ -147,9 +171,9 @@ namespace Kernel
 					if (m_cfgNew.m_dicFiles [_key].IsSame (m_cfgOld.m_dicFiles [_key]))
 						continue;
 				}
-
-				if (!_IsCanDown (m_cfgNew.m_dicFiles [_key]))
-					continue;
+				// 读取文件流，下载会很卡的
+//				if (!_IsCanDown (m_cfgNew.m_dicFiles [_key]))
+//					continue;
 
 				m_dwf = DownLoadFile.ParseBy (m_cfgNew.m_dicFiles [_key]);
 				m_dwf.m_url = this.m_newUrl;
@@ -199,6 +223,7 @@ namespace Kernel
 				max.m_updates.Remove (m_lKeys [i]);
 			}
 
+			m_lKeys.Clear ();
 			min.Clear ();
 		}
 
@@ -300,31 +325,56 @@ namespace Kernel
 
 		void _ST_DownFiles ()
 		{
-			if (m_updates.Count <= 0) {
+			if (m_updates.Count <= 0 && m_lDowning.Count <= 0) {
 				if (m_state == State.DownFiles)
 					m_state = State.Finished;
 				return;
 			}
 
 			m_lKeys.Clear ();
-			foreach (string _key in m_updates.Keys) {
-				m_dwf = m_updates [_key];
-				m_dwf.OnUpdate ();
 
+			if (m_lDowning.Count < m_nLimitDowning && m_updates.Count > 0) {
+				m_lKeys.AddRange (m_updates.Keys);
+
+				int diff = m_nLimitDowning - m_lDowning.Count;
+				while (diff > 0 && m_lKeys.Count > 0) {
+					m_key = m_lKeys [0];
+					m_lKeys.RemoveAt (0);
+
+					m_dwf = m_updates [m_key];
+					m_lDowning.Add (m_dwf);
+					m_updates.Remove (m_key);
+
+					diff--;
+				}
+
+				m_lKeys.Clear ();
+			}
+
+			for (int i = 0; i < m_lDowning.Count; i++) {
+				m_lDowning [i].OnUpdate ();
+			}
+
+			for (int i = 0; i < m_lDowning.Count; i++) {
+				m_dwf = m_lDowning [i];
 				if (m_dwf.isError) {
+					m_lRemoveDownings.Add (m_dwf);
+					m_lDownError.Add (m_dwf);
 					m_state = (State)((int)m_dwf.m_state);
-					m_lKeys.Add (_key);
 					_ExcCBDownFile (m_dwf);
+					_LogError (m_dwf.m_error.Message);
 				} else if (m_dwf.isFinished) {
-					m_lKeys.Add (_key);
+					m_lRemoveDownings.Add (m_dwf);
 					_ExcCBDownFile (m_dwf);
 				}
 			}
 
-			if (m_lKeys.Count > 0) {
-				for (int i = 0; i < m_lKeys.Count; i++) {
-					m_updates.Remove (m_lKeys [i]);
+			if (m_lRemoveDownings.Count > 0) {
+				for (int i = 0; i < m_lRemoveDownings.Count; i++) {
+					m_lDowning.Remove (m_lRemoveDownings [i]);
 				}
+
+				m_lRemoveDownings.Clear ();
 			}
 		}
 
@@ -335,6 +385,10 @@ namespace Kernel
 			}
 		}
 
+		void _LogError(string msg){
+			UnityEngine.Debug.LogError (msg);
+		}
+
 		public long GetDownSize(){
 			long sum = 0;
 			foreach (var item in m_updates.Values) {
@@ -343,11 +397,16 @@ namespace Kernel
 			return sum;
 		}
 
-		public void ReDownFile(DownLoadFile obj){
-			obj.ReDown ();
+		public void ReDownFile(){
+			if (m_lDownError.Count > 0) {
+				for (int i = 0; i < m_lDownError.Count; i++) {
+					m_lDownError [i].ReDown ();
+				}
+				m_lNeed.AddRange (m_lDownError);
 
-			m_lNeed.Add (obj);
-			m_state = State.PreDownFiles;
+				m_lDownError.Clear ();
+			}
+			this.m_state = State.PreDownFiles;
 		}
 
 		public void Save ()

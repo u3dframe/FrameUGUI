@@ -56,7 +56,6 @@ namespace Kernel
 		CompareFiles m_last = null,m_curr = null;
 
 		WWW m_www = null;
-		DownLoadFile m_dlfile = null;
 
 		long m_nSizeAll = 0;
 		long m_nSizeCurr = 0;
@@ -186,7 +185,8 @@ namespace Kernel
 					}
 					m_curr = new CompareFiles ();
 					if (m_last != null) {
-						m_curr.Init(m_last.m_newContent,m_www.text, m_cfgNew.m_urlRes);
+						// m_curr.Init(m_last.m_newContent,m_www.text, m_cfgNew.m_urlRes);
+						 m_curr.Init(m_last.m_cfgOld,m_www.text, m_cfgNew.m_urlRes);
 					} else {
 						m_curr.Init (m_www.text, m_cfgNew.m_urlRes);
 					}
@@ -233,13 +233,10 @@ namespace Kernel
 			}
 			m_isDoDownFiles = false;
 
-			if (m_curr == null) {
-				m_state = State.Finished;
-				return;
-			}
-			
 			m_state = State.DownFiles;
-			m_curr.m_callDownFile = _CallDownFile;
+
+			if (m_curr != null)
+				m_curr.m_callDownFile = _CallDownFile;
 		}
 
 		void _ST_DownFiles(){
@@ -258,7 +255,6 @@ namespace Kernel
 		}
 
 		void _CallDownFile(DownLoadFile obj){
-			m_dlfile = obj;
 			if (obj.isFinished) {
 				m_nSizeCurr += obj.m_size;
 			}
@@ -334,23 +330,18 @@ namespace Kernel
 		}
 
 		public void ReDownFile(){
-			if (m_dlfile == null) {
-				return;
-			}
-
 			if (m_curr == null)
 				return;
 			
-			m_curr.ReDownFile (m_dlfile);
-			m_dlfile = null;
+			this.m_curr.ReDownFile ();
+
+			m_state = State.DownFiles;
 		}
 
 		public void Clear(){
 			m_lComFiles.Clear ();
 			m_last = null;
 			m_curr = null;
-
-			m_dlfile = null;
 
 			m_nSizeAll = 0;
 			m_nSizeCurr = 0;

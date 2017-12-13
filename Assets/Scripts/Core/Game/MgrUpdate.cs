@@ -34,6 +34,13 @@ class MgrUpdate : MonoBehaviour {
 	State m_preState = State.None;
 	State m_state = State.None;
 
+	bool isError{
+		get{
+			return m_state == State.Error_UnZip_Init || m_state == State.Error_Net || m_state == State.Error_Ver 
+				|| m_state == State.Error_FileList || m_state == State.Error_DownFiles;
+		}
+	}
+
 	bool m_isRunning = false;
 	bool m_isInit = false;
 
@@ -46,7 +53,7 @@ class MgrUpdate : MonoBehaviour {
 
 	List<AssetBundle> m_uiAbs = new List<AssetBundle> ();
 
-	float m_limitUpTime = 1,m_currTime = 0;
+	float m_limitUpTime = 0.05f,m_currTime = 0;
 
 	// Use this for initialization
 	public void Init (bool isValidVer = true,bool isUnZip = true) {
@@ -92,6 +99,8 @@ class MgrUpdate : MonoBehaviour {
 		}
 
 		OnUpdateUI ();
+
+		OnUpdateUI4Error ();
 	}
 
 	void _Init(){
@@ -135,10 +144,10 @@ class MgrUpdate : MonoBehaviour {
 	}
 
 	void _LoadUpdateUI(){
-		System.Action<AssetBundle> _call = (ab) => {
-			ab.LoadAllAssets();
-			m_uiAbs.Add(ab);
-		};
+//		System.Action<AssetBundle> _call = (ab) => {
+//			ab.LoadAllAssets();
+//			m_uiAbs.Add(ab);
+//		};
 
 		// _LoadAB ("", _call); 图集
 		// _LoadAB ("", _call); 字体
@@ -209,6 +218,7 @@ class MgrUpdate : MonoBehaviour {
 
 					// 询问是否开始下载?
 					_comVer.m_isDoDownFiles = true;
+					_ReState ();
 				}
 			}
 		} else {
@@ -226,8 +236,8 @@ class MgrUpdate : MonoBehaviour {
 	}
 
 	void _ST_Completed(){
-		// 进入游戏
 		m_isRunning = false;
+		// 进入游戏
 	}
 
 	void _ReState(bool isWaitCommand = false){
@@ -237,7 +247,11 @@ class MgrUpdate : MonoBehaviour {
 			return;
 		}
 
-		m_state = m_preState;
+		_ReState (m_preState);
+	}
+
+	void _ReState(State currState){
+		m_state = currState;
 		m_preState = State.None;
 	}
 
@@ -265,6 +279,17 @@ class MgrUpdate : MonoBehaviour {
 			break;
 		case State.Completed:
 			break;
+		}
+	}
+
+	void OnUpdateUI4Error(){
+		if (m_state == State.WaitCommand || !isError)
+			return;
+
+		State _tmpState = m_state;
+		_ReState (true);
+
+		switch (_tmpState) {
 		case State.Error_UnZip_Init:
 			break;
 		case State.Error_Net:
@@ -284,13 +309,21 @@ class MgrUpdate : MonoBehaviour {
 		float fKB = size / 1024f;
 		float fMB = fKB / 1024f;
 		if (fMB > 1.0f) {
-			return string.Format ("{0:00}MB", fMB);
+			return string.Format ("{0:F}MB", fMB);
 		}
 
 		if (fKB > 1.0f) {
-			return string.Format ("{0:00}KB", fKB);
+			return string.Format ("{0:F}KB", fKB);
 		}
 
-		return string.Format ("{0:00}B", size);
+		return string.Format ("{0:F}B", size);
+	}
+
+	void _ExitQuit(){
+		#if UNITY_EDITOR
+		UnityEditor.EditorApplication.isPlaying = false;
+		#else
+		Application.Quit ();
+		#endif
 	}
 }

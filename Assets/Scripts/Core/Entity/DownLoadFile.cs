@@ -34,11 +34,7 @@ namespace Kernel
 			}
 		}
 
-		public bool isFinished{
-			get{
-				return m_state == State.Finished;
-			}
-		}
+		public bool isFinished{ get{ return m_state == State.Finished; } }
 
 		// 错误信息
 		public System.Exception m_error{ get; private set;}
@@ -56,6 +52,12 @@ namespace Kernel
 		int m_numCountTry = 0;
 
 		bool m_isRunning = true;
+
+		public DownLoadFile():base(){
+		}
+
+		public DownLoadFile(string row):base(row){
+		}
 
 		public void OnUpdate(){
 			if (!m_isRunning)
@@ -153,16 +155,18 @@ namespace Kernel
 
 		void Reset ()
 		{
+			m_state = State.None;
 			if (m_www != null) {
 				m_www.Dispose ();
 				m_www = null;
 			}
-			m_state = State.None;
+
+			m_numCountTry = 0;
 		}
 
 		public void ReDown(){
 			Reset ();
-			m_state = State.Init;
+			this.m_state = State.Init;
 		}
 
 		static public DownLoadFile ParseBy(ResInfo info){
@@ -173,7 +177,7 @@ namespace Kernel
 					ret = (DownLoadFile)info;
 				} else {
 					ret = new DownLoadFile ();
-					ret.Init (info.ToString ());
+					ret.CloneFromOther (info);
 				}
 
 				ret.ReDown ();
