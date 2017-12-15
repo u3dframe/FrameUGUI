@@ -8,7 +8,8 @@ namespace Kernel
 	/// 类名 : 版本配置
 	/// 作者 : Canyon / 龚阳辉
 	/// 日期 : 2017-12-07 10:35
-	/// 功能 : 1.只有一个version(多版本地址),2多个version管理自身更新地址
+	/// 功能 : 1.多个version管理自身更新地址,2.只有一个version(多版本地址)
+	/// 默认是多版本，各管各的信息
 	/// </summary>
 	public class CfgVersion  {
 
@@ -100,7 +101,10 @@ namespace Kernel
 			}
 
 			this.m_content = content;
+			_OnInit (this.m_content);
+		}
 
+		protected virtual void _OnInit(string content){
 			string[] _vals = content.Split ("\r\n\t".ToCharArray (), System.StringSplitOptions.RemoveEmptyEntries);
 			string[] _arrs;
 			for (int i = 0; i < _vals.Length; i++) {
@@ -139,13 +143,16 @@ namespace Kernel
 		}
 
 		public void Save(){
+			if (string.IsNullOrEmpty (this.m_filePath)) {
+				this.m_filePath = Kernel.GameFile.GetFilePath (m_defFileName);
+			}
+			
+			GameFile.CreateFolder (this.m_filePath);
+			_OnSave ();
+		}
+
+		protected virtual void _OnSave(){
 			try {
-				if (string.IsNullOrEmpty (this.m_filePath)) {
-					this.m_filePath = Kernel.GameFile.GetFilePath (m_defFileName);
-				}
-
-				GameFile.CreateFolder (this.m_filePath);
-
 				using (FileStream stream = new FileStream (this.m_filePath, FileMode.OpenOrCreate)) {
 					using (StreamWriter writer = new StreamWriter (stream)) {
 						string _fmt = "{0}={1}";
