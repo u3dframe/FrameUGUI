@@ -44,7 +44,9 @@ class MgrUpdate : MonoBehaviour {
 	bool m_isRunning = false;
 	bool m_isInit = false;
 
-	long nCurr = 0,nSize = 0;
+	long nCurr = 0,nSize = 0,nPercent = 0;
+
+	long nLimitSize = 1024 * 1024 * 5;
 
 	Dictionary<string,string> m_dicLanguage = new Dictionary<string, string>();
 
@@ -214,11 +216,14 @@ class MgrUpdate : MonoBehaviour {
 				m_state = State.Completed;
 			} else if (_comVer.isPreDown) {
 				if (!_comVer.m_isDoDownFiles) {
-					_ReState (true);
-
-					// 询问是否开始下载?
-					_comVer.m_isDoDownFiles = true;
-					_ReState ();
+					if (nLimitSize < nSize) {
+						_ReState (true);
+						// 询问是否开始下载?
+						_comVer.m_isDoDownFiles = true;
+						_ReState ();
+					} else {
+						_comVer.m_isDoDownFiles = true;
+					}
 				}
 			}
 		} else {
@@ -263,6 +268,7 @@ class MgrUpdate : MonoBehaviour {
 		case State.Init:
 			break;
 		case State.UnZipResource:
+			Debug.Log (nCurr + " == " + nSize + " = " + nPercent);
 			break;
 		case State.CheckNet:
 			break;
@@ -275,7 +281,7 @@ class MgrUpdate : MonoBehaviour {
 		case State.DeleteOldFiles:
 			break;
 		case State.DownFiles:
-			Debug.Log (nCurr + " == " + nSize);
+			Debug.Log (nCurr + " == " + nSize + " = " + nPercent);
 			break;
 		case State.Completed:
 			break;
