@@ -94,6 +94,7 @@ public class EDW_Patcher : EditorWindow
     #region  == Self Func ===
     void Init()
     {
+		Kernel.Core.EL_Patcher.ReInit ();
     }
 
     void OnUpdate()
@@ -183,13 +184,18 @@ public class EDW_Patcher : EditorWindow
 			return;
 
 		if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Zip(全部)")) {
+			_ZipAllAssets ();
 		}
 
-		// if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Zip(补丁文件)")) {
-		// }
+		if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Zip(补丁)")) {
+			_ZipPatche ();
+		 }
 
-		// if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Zip压缩(Mini)")) {
-		// }
+		if(Kernel.Core.EL_Patcher.m_isBuilded){
+			if (GUI.Button (CreateRect (ref curX, botY, 100,30), "ClearCache")) {
+				_ClearCache ();
+			}
+		}
 	}
 
 	void _SaveVersion(){
@@ -204,5 +210,13 @@ public class EDW_Patcher : EditorWindow
 
 	void _ZipAllAssets(){
 		Kernel.Core.EL_Patcher.BuildAll (true);
+	}
+
+	void _ZipPatche(){
+		Kernel.Core.EL_Patcher.BuildPatch ();
+	}
+
+	void _ClearCache(){
+		Kernel.Core.EL_Patcher.ClearCache ();
 	}
 }

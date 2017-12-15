@@ -44,6 +44,15 @@ namespace Kernel
 			Init (Kernel.GameFile.GetText (fn));
 		}
 
+		public void LoadFP(string fp){
+			this.m_filePath = fp;
+			string _content = "";
+			if(File.Exists(fp))
+				_content = File.ReadAllText(fp);
+
+			Init (_content);
+		}
+
 		public void Init(string content){
 			if(string.IsNullOrEmpty(content)){
 				return;

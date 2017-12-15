@@ -63,12 +63,12 @@ class MgrUpdate : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 		if (!m_isRunning)
 			return;
 
 		if (m_limitUpTime > 0.02f) {
-			m_currTime += Time.deltaTime;
+			m_currTime += Time.fixedDeltaTime;
 			if (m_currTime < m_limitUpTime)
 				return;
 			m_currTime -= m_limitUpTime;
@@ -164,7 +164,7 @@ class MgrUpdate : MonoBehaviour {
 	}
 
 	void _LoadAB(string fn,System.Action<AssetBundle> callFunc = null){
-		string _fp = Kernel.GameFile.GetFilePath (fn);
+		string _fp = Kernel.GameFile.GetPath (fn);
 		AssetBundle _ab = AssetBundle.LoadFromFile (_fp);
 		if (_ab != null) {
 			if (callFunc != null) {

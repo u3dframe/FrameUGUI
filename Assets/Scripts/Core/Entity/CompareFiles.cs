@@ -41,13 +41,15 @@ namespace Kernel
 		public string m_newContent{ get; private set; }
 
 		CfgFileList _m_cfgOld = new CfgFileList (true);
-		CfgFileList m_cfgNew = new CfgFileList (true);
+		CfgFileList _m_cfgNew = new CfgFileList (true);
 
 		public CfgFileList m_cfgOld{ get { return _m_cfgOld; } }
+		public CfgFileList m_cfgNew{ get { return _m_cfgNew; } }
 
 		// 删除的
 		Dictionary<string,ResInfo> m_deletes = new Dictionary<string, ResInfo> ();
-		Dictionary<string,DownLoadFile> m_updates = new Dictionary<string, DownLoadFile> ();
+		Dictionary<string,DownLoadFile> _m_updates = new Dictionary<string, DownLoadFile> ();
+		public Dictionary<string,DownLoadFile> m_updates{ get { return _m_updates; } }
 		List<DownLoadFile> m_lNeed = new List<DownLoadFile> ();
 
 		// 限定正在下载的个数
@@ -110,31 +112,40 @@ namespace Kernel
 			Clear ();
 
 			this.m_newUrl = newUrl;
-
 			this.m_newContent = newFiles;
 
 			this.m_cfgOld.Init (oldFiles);
-
 			this.m_cfgNew.Init (newFiles);
 
-			this._Compare ();
-
-			m_state = State.Init;
+			this.DoCompare ();
 		}
 
 		public void Init(CfgFileList oldFiles, string newFiles, string newUrl){
 			Clear ();
 
 			this.m_newUrl = newUrl;
-
 			this.m_newContent = newFiles;
 
 			this.m_cfgOld.CloneFromOther(oldFiles);
-
 			this.m_cfgNew.Init (newFiles);
 
-			this._Compare ();
+			this.DoCompare ();
+		}
 
+		public void Init(CfgFileList oldFiles, CfgFileList newFiles, string newUrl){
+			Clear ();
+
+			this.m_newUrl = newUrl;
+			this.m_newContent = newFiles.m_content;
+
+			this.m_cfgOld.CloneFromOther(oldFiles);
+			this.m_cfgNew.CloneFromOther (newFiles);
+
+			this.DoCompare ();
+		}
+
+		public void DoCompare(){
+			this._Compare ();
 			m_state = State.Init;
 		}
 

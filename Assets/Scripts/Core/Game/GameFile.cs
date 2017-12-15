@@ -40,6 +40,7 @@ namespace Kernel
 
 		// zip 压缩文件
 		static public readonly string m_fpZipCache = string.Format ("{0}resource.zip", m_dirResCache);
+		static public readonly string m_fpZipCachePatch = string.Format ("{0}res_patch.zip", m_dirResCache);
 		static public readonly string m_fpZip = string.Format ("{0}resource.zip", m_dirStreaming);
 
 		// 统一分割符号
@@ -71,6 +72,15 @@ namespace Kernel
 			return string.Concat (m_dirStreaming, fn);
 		}
 
+		static public string GetPath(string fn){
+			string _fp = GetFilePath (fn);
+			if (File.Exists (_fp)) {
+				return _fp;
+			}
+
+			return GetStreamingFilePath (fn);
+		}
+
 		static public void DeleteFile(string fn){
 			string _fp = GetFilePath (fn);
 			if (File.Exists (_fp))
@@ -79,7 +89,7 @@ namespace Kernel
 
 		// 取得文本内容
 		static public string GetText(string fn){
-			string _fp = GetFilePath (fn);
+			string _fp = GetPath (fn);
 			if (File.Exists (_fp)) {
 				return File.ReadAllText (_fp);
 			}
@@ -94,7 +104,7 @@ namespace Kernel
 
 		// 取得文件流
 		static public byte[] GetFileBytes(string fn){
-			string _fp = GetFilePath (fn);
+			string _fp = GetPath (fn);
 			if (File.Exists (_fp)) {
 				return File.ReadAllBytes (_fp);
 			}

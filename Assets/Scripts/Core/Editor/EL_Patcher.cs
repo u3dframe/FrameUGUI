@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Kernel.Core{
 	
@@ -14,6 +15,8 @@ namespace Kernel.Core{
 	/// 最后Zip或者所以文件拷贝到Assets下面流文件
 	/// </summary>
 	public static class EL_Patcher {
+		
+		static public bool m_isBuilded{ get; private set;}
 		static List<ResInfo> m_list = new List<ResInfo>();
 
 		static string[] m_ignoreFiles = {
@@ -134,9 +137,10 @@ namespace Kernel.Core{
 			}
 		}
 
-		static void _ZipFiles(List<ResInfo> list){
-			GameFile.DeleteFile (GameFile.m_fpZipCache);
-			GameFile.CreateFolder (GameFile.m_fpZipCache);
+		static void _ZipFiles(List<ResInfo> list,bool isAll){
+			string _destFile = isAll ? GameFile.m_fpZipCache : GameFile.m_fpZipCachePatch;
+			GameFile.DeleteFile (_destFile);
+			GameFile.CreateFolder (_destFile);
 		}
 
 		static void _ToSteamingAssets(bool isZip){
@@ -144,27 +148,72 @@ namespace Kernel.Core{
 			GameFile.CreateFolder (GameFile.m_dirStreaming);
 
 			if (isZip) {
-				File.Copy(GameFile.m_fpZipCache,GameFile.m_fpZip);
+				if (File.Exists (GameFile.m_fpZipCache))
+					File.Copy (GameFile.m_fpZipCache, GameFile.m_fpZip, true);
 				return;
 			}
 
 			_CopyFiles (GameFile.m_dirResCache, GameFile.m_dirStreaming, false, null);
 		}
 
-		static public void BuildAll(bool isZip){
-			m_list.Clear ();
+		static void _CopyFilelistToRes(){
+			string _srcfp = string.Concat (GameFile.m_dirResCache, "filelist.txt");
+			string _destfp = string.Concat (GameFile.m_dirRes, "filelist.txt");
+			if (File.Exists (_srcfp))
+				File.Copy (_srcfp,_destfp, true);
+		}
+
+		static void _Build(bool isZip,bool isAll){
+			ReInit ();
 			EditorUtility.DisplayProgressBar ("Patachering","开始处理...", 0);
 			_Copy2Cache (m_list);
 			_MakeNewFilelist (m_list);
 			if (isZip) {
-				_ZipFiles (m_list);
+				_ZipFiles (m_list,isAll);
 			}
-			_ToSteamingAssets (isZip);
-
-			m_list.Clear ();
-			GameFile.DeleteFolder (GameFile.m_dirResCache);
-
+			if (isAll) {
+				_ToSteamingAssets (isZip);
+				_CopyFilelistToRes ();
+			}
+			m_isBuilded = true;
 			EditorUtility.ClearProgressBar ();
+		}
+
+		static public void BuildAll(bool isZip){
+			_Build (isZip, true);
+		}
+
+		static public void BuildPatch(){
+			if(!m_isBuilded)
+				_Build (false, false);
+
+			EditorUtility.DisplayProgressBar ("BuildPatch","开始对比...", 0);
+
+			CompareFiles comFile = new CompareFiles ();
+			comFile.m_cfgOld.LoadDefault ();
+			comFile.m_cfgNew.LoadFP(string.Concat(GameFile.m_dirResCache,"filelist.txt"));
+			comFile.DoCompare ();
+
+			var ups = comFile.m_updates;
+			m_list.Clear ();
+			foreach (var item in ups.Values) {
+				m_list.Add (item);
+			}
+			_ZipFiles (m_list,false);
+
+			_CopyFilelistToRes ();
+			EditorUtility.ClearProgressBar ();
+		}
+
+		static public void ClearCache(){
+			ReInit ();
+			GameFile.DeleteFolder (GameFile.m_dirResCache);
+		}
+
+		static public void ReInit(){
+			m_isBuilded = false;
+			m_list.Clear ();
+			EL_Path.Clear ();
 		}
 	}
 }

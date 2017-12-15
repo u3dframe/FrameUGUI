@@ -8,7 +8,8 @@ namespace Kernel
 	/// 类名 : 版本配置
 	/// 作者 : Canyon / 龚阳辉
 	/// 日期 : 2017-12-07 10:35
-	/// 功能 : 
+	/// 功能 : 注意点version版本地址必须固定,避免version地址出差错(更新下去后不能再次访问)
+	/// version地址不给配置，写死(每个服务器地址都写死)
 	/// </summary>
 	public class CfgVersion  {
 
