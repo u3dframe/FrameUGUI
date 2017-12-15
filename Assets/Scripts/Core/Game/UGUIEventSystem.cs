@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(EventSystem))]
+[RequireComponent(typeof(EventSystem),typeof(StandaloneInputModule))]
 public class UGUIEventSystem : MonoBehaviour {
 
 	bool _isCheck = false;
@@ -19,7 +19,7 @@ public class UGUIEventSystem : MonoBehaviour {
 		if (!_isCheck)
 			return;
 
-		if (EventSystem.current == null) {
+		if (EventSystem.current != _curr) {
 			EventSystem.current = _curr;
 		}
 	}
