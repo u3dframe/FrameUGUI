@@ -166,10 +166,6 @@ public class EDW_Patcher : EditorWindow
 		m_cfgVer.m_urlFilelist = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlFilelist);
 
 		NextLine (ref curX, ref curY, 30);
-		GUI.Label (CreateRect (ref curX, curY,80, 25), "补丁下载地址:");
-		m_cfgVer.m_urlRes = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlRes);
-
-		NextLine (ref curX, ref curY, 30);
 
 		int botY = (int)(height - 30);
 		if (botY > curY) {

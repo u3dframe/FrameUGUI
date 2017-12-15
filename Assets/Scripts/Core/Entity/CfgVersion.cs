@@ -8,8 +8,7 @@ namespace Kernel
 	/// 类名 : 版本配置
 	/// 作者 : Canyon / 龚阳辉
 	/// 日期 : 2017-12-07 10:35
-	/// 功能 : 注意点version版本地址必须固定,避免version地址出差错(更新下去后不能再次访问)
-	/// version地址不给配置，写死(每个服务器地址都写死)
+	/// 功能 : 1.只有一个version(多版本地址),2多个version管理自身更新地址
 	/// </summary>
 	public class CfgVersion  {
 
@@ -42,7 +41,14 @@ namespace Kernel
 		public string m_urlFilelist = "";
 
 		// 下载资源的地址
-		public string m_urlRes = "";
+		public string m_urlRes{
+			get{
+				return string.Format (_FmtUrlPath (m_urlFilelist),"files");
+			}
+		}
+
+		// 地址
+		public string m_urlFlielists = "";
 
 		// 文件路径
 		string m_filePath = "";
@@ -80,7 +86,6 @@ namespace Kernel
 			m_platformType = "CN";
 			m_language = "CN";
 			m_urlVersion = URL_HEAD;
-			m_urlRes = URL_HEAD;
 			m_urlFilelist = URL_HEAD;
 		}
 
@@ -127,9 +132,6 @@ namespace Kernel
 				case m_kUrlFilelist:
 					m_urlFilelist = _arrs [1];
 					break;
-				case m_kUrlRes:
-					m_urlRes = _arrs [1];
-					break;
 				default:
 					break;
 				}
@@ -153,9 +155,8 @@ namespace Kernel
 						writer.WriteLine (string.Format (_fmt, m_kSvnVerCode, m_svnVerCode));
 						writer.WriteLine (string.Format (_fmt, m_kPlatformType, m_platformType));
 						writer.WriteLine (string.Format (_fmt, m_kLanguage, m_language));
-						writer.WriteLine (string.Format (_fmt, m_kUrlVersion, m_urlVersion));
 						writer.WriteLine (string.Format (_fmt, m_kUrlFilelist, m_urlFilelist));
-						writer.WriteLine (string.Format (_fmt, m_kUrlRes, m_urlRes));
+						writer.WriteLine (string.Format (_fmt, m_kUrlVersion, m_urlVersion));
 					}
 				}
 			} catch{
@@ -196,18 +197,12 @@ namespace Kernel
 		public bool IsUpdate(bool isCheckResUrl = false){
 			if (string.IsNullOrEmpty (m_resVerCode))
 				return false;
-
+			
 			if (string.IsNullOrEmpty (m_urlVersion) || URL_HEAD.Equals(m_urlVersion) || m_urlVersion.IndexOf(URL_HEAD) != 0)
 				return false;
 
 			if (string.IsNullOrEmpty (m_urlFilelist) || URL_HEAD.Equals(m_urlFilelist) || m_urlFilelist.IndexOf(URL_HEAD) != 0)
 				return false;
-			
-			if (isCheckResUrl) {
-				// 外网要检测，本地不需要检测
-				if (string.IsNullOrEmpty (m_urlRes) || URL_HEAD.Equals (m_urlRes) || m_urlRes.IndexOf(URL_HEAD) != 0)
-					return false;
-			}
 
 			return true;
 		}
@@ -243,7 +238,6 @@ namespace Kernel
 			this.m_language = other.m_language;
 			this.m_urlVersion = other.m_urlVersion;
 			this.m_urlFilelist = other.m_urlFilelist;
-			this.m_urlRes = other.m_urlRes;
 		}
 
 		static CfgVersion _instance;
