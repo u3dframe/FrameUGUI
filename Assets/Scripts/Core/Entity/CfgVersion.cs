@@ -15,7 +15,7 @@ namespace Kernel
 
 		static public readonly string m_defFileName = "version.txt";
 
-		static string URL_HEAD = "http://";
+		protected static string URL_HEAD = "http://";
 
 		// 资源版本号(yyMMddHHmmss)
 		public string m_resVerCode = "";
@@ -48,23 +48,19 @@ namespace Kernel
 			}
 		}
 
-		// 地址
-		public string m_urlFlielists = "";
-
 		// 文件路径
-		string m_filePath = "";
+		protected string m_filePath = "";
 
 		public string m_content{ get; private set; }
 
-		const string m_kResVerCode = "resVersion";
-		const string m_kLastResVerCode = "lastResVersion";
-		const string m_kGameVerCode = "version";
-		const string m_kSvnVerCode = "svnVersion";
-		const string m_kPlatformType = "platform";
-		const string m_kLanguage = "language";
+		protected const string m_kResVerCode = "resVersion";
+		protected const string m_kLastResVerCode = "lastResVersion";
+		protected const string m_kGameVerCode = "version";
+		protected const string m_kSvnVerCode = "svnVersion";
+		protected const string m_kPlatformType = "platform";
+		protected const string m_kLanguage = "language";
 		const string m_kUrlVersion = "url";
-		const string m_kUrlFilelist = "url_fl";
-		const string m_kUrlRes = "downurl";
+		protected const string m_kUrlFilelist = "url_fl";
 
 		public string urlPath4Ver{
 			get{
@@ -201,7 +197,7 @@ namespace Kernel
 			Save ();
 		}
 
-		public bool IsUpdate(bool isCheckResUrl = false){
+		public virtual bool IsUpdate(bool isCheckResUrl = false){
 			if (string.IsNullOrEmpty (m_resVerCode))
 				return false;
 			
@@ -237,7 +233,7 @@ namespace Kernel
 			return string.Concat (url, "/{0}");
 		}
 
-		public void CloneFromOther(CfgVersion other){
+		public virtual void CloneFromOther(CfgVersion other){
 			this.m_resVerCode = other.m_resVerCode;
 			this.m_gameVerCode = other.m_gameVerCode;
 			this.m_svnVerCode = other.m_svnVerCode;
