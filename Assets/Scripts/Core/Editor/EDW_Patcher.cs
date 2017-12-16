@@ -51,11 +51,11 @@ public class EDW_Patcher : EditorWindow
     }
 
     #region  == Member Attribute ===
-	Kernel.CfgVersion _m_cfgVer;
-	Kernel.CfgVersion m_cfgVer{
+	Kernel.CfgVersionOnly _m_cfgVer;
+	Kernel.CfgVersionOnly m_cfgVer{
 		get{
 			if (_m_cfgVer == null) {
-				_m_cfgVer = Kernel.CfgVersion.instance;
+				_m_cfgVer = Kernel.CfgVersionOnly.instance;
 				_m_cfgVer.LoadDefault4EDT ();
 			}
 			return _m_cfgVer;
@@ -159,7 +159,8 @@ public class EDW_Patcher : EditorWindow
 
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "version地址:");
-		m_cfgVer.m_urlVersion = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlVersion);
+//		m_cfgVer.m_urlVersion = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlVersion);
+		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlVersion);
 
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "filelist地址:");

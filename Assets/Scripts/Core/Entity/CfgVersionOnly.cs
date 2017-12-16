@@ -10,21 +10,43 @@ namespace Kernel
 	/// 类名 : 版本配置
 	/// 作者 : Canyon / 龚阳辉
 	/// 日期 : 2017-12-16 12:35
-	/// 功能 : 只有一个version
+	/// 功能 : 只有一个version,根据渠道宏来定地址
 	/// </summary>
 	public class CfgVersionOnly : CfgVersion  {
 		// 地址
 		public List<string> m_lUrlFls = new List<string>();
 		const string m_kUrlFls = "url_fls";
 
+		// 是否可以写入文件列表地址s
+		public bool m_isCanWriteUrlFls{get;set;}
+
+		// 当前下载filelist的地址在列表中的位置
+		public int m_iIndInFls { get; private set; }
+
+		string m_urlVerOnly = "";
+
 		public CfgVersionOnly() : base(){
+			this.m_isCanWriteUrlFls = true;
+			this.m_iIndInFls = 0;
+
+			#if UNITY_EDITOR
+			this.m_urlVerOnly = "http://192.168.30:8006/z1";
+			#else
+			this.m_urlVerOnly = "http://192.168.30:8006/z1";
+			#endif
+
+			_OnPlatformChange ();
 		}
 
 		protected override void _OnInit (string content)
 		{
 			this.m_lUrlFls.Clear();
 
-			JsonData _jsonData = JsonMapper.ToObject (content);
+			JsonData _jsonData = null;
+			try {
+				_jsonData = JsonMapper.ToObject (content);
+			} catch{				
+			}
 			if (_jsonData == null)
 				return;
 			
@@ -49,9 +71,17 @@ namespace Kernel
 
 			if (jsonData == null || !jsonData.IsArray)
 				return;
-			
+
+			string _url = "";
 			for (int i = 0; i < jsonData.Count; i++) {
-				this.m_lUrlFls.Add (_ToStr(jsonData[i]));
+				_url = _ToStr (jsonData [i]);
+				if (this.m_lUrlFls.Contains (_url))
+					continue;
+				
+				this.m_lUrlFls.Add (_url);
+				if (_url.Equals (this.m_urlFilelist)) {
+					this.m_iIndInFls = this.m_lUrlFls.Count - 1;
+				}
 			}
 		}
 
@@ -97,15 +127,20 @@ namespace Kernel
 			_jsonData[m_kLanguage] = this.m_language;
 			_jsonData[m_kUrlFilelist] = this.m_urlFilelist;
 
-			#if UNITY_EDITOR
-			if (!this.m_lUrlFls.Contains (this.m_urlFilelist)) {
-				this.m_lUrlFls.Add (this.m_urlFilelist);
+			if (this.m_isCanWriteUrlFls) {
+				if (!this.m_lUrlFls.Contains (this.m_urlFilelist)) {
+					this.m_lUrlFls.Add (this.m_urlFilelist);
+				}
+
+				_jsonData [m_kUrlFls] = _ToJsonStr4Lists ();
 			}
 
-			_jsonData [m_kUrlFls] = _ToJsonStr4Lists();
-			#endif
+			File.WriteAllText (this.m_filePath, _jsonData.ToJson());
+		}
 
-			File.WriteAllText (this.m_filePath, _jsonData.ToJson ());
+		protected override void _OnPlatformChange ()
+		{
+			this.m_urlVersion = string.Format(_FmtUrlPath (m_urlVerOnly),m_platformType);
 		}
 
 		static CfgVersionOnly _instance;

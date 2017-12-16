@@ -30,7 +30,17 @@ namespace Kernel
 		public string m_svnVerCode = "";
 
 		// 平台标识
-		public string m_platformType = "";
+		string _m_platformType = "";
+		public string m_platformType{
+			get{ return _m_platformType; }
+			set{
+				bool _isChg = !_m_platformType.Equals (value);
+				_m_platformType = value; 
+				if (_isChg) {
+					_OnPlatformChange ();
+				}
+			}
+		}
 
 		// 基础语言类型
 		public string m_language = "";
@@ -87,8 +97,8 @@ namespace Kernel
 		}
 
 		public void Load(string fn){
-			this.m_filePath = Kernel.GameFile.GetFilePath (fn);
-			Init (Kernel.GameFile.GetText (fn));
+			this.m_filePath = GameFile.GetFilePath (fn);
+			Init (GameFile.GetText (fn));
 		}
 
 		public void Init(string content){
@@ -140,7 +150,7 @@ namespace Kernel
 
 		public void Save(){
 			if (string.IsNullOrEmpty (this.m_filePath)) {
-				this.m_filePath = Kernel.GameFile.GetFilePath (m_defFileName);
+				this.m_filePath = GameFile.GetFilePath (m_defFileName);
 			}
 			
 			GameFile.CreateFolder (this.m_filePath);
@@ -225,7 +235,7 @@ namespace Kernel
 			return false;
 		}
 
-		string _FmtUrlPath(string url){
+		protected string _FmtUrlPath(string url){
 			int _index = url.LastIndexOf("/");
 			if (_index == url.Length - 1) {
 				return string.Concat (url, "{0}");
@@ -241,6 +251,9 @@ namespace Kernel
 			this.m_language = other.m_language;
 			this.m_urlVersion = other.m_urlVersion;
 			this.m_urlFilelist = other.m_urlFilelist;
+		}
+
+		protected virtual void _OnPlatformChange(){
 		}
 
 		static CfgVersion _instance;
