@@ -137,7 +137,7 @@ namespace Kernel.Core{
 			}
 		}
 
-		static void _ZipFiles(List<ResInfo> list,bool isAll){
+		static void _ZipFiles(List<ResInfo> list,bool isAll,string packageZip = ""){
 			string _destFile = isAll ? GameFile.m_fpZipCache : GameFile.m_fpZipCachePatch;
 			GameFile.DeleteFile (_destFile);
 			GameFile.CreateFolder (_destFile);

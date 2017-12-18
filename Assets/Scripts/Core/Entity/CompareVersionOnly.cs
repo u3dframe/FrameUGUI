@@ -70,9 +70,9 @@ namespace Kernel
 					m_last = null;
 					m_curr = null;
 					if (cfgTmp.m_isCanWriteUrlFls) {
-						m_state = State.CompareFileList;
-					} else {
 						m_cfgOld.CloneFromOther (m_cfgNew);
+					} else {
+						m_state = State.CompareFileList;
 					}
 				} else {
 					m_state = State.Error_DownFileList;
