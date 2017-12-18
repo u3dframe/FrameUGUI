@@ -63,6 +63,7 @@ public class EDW_Patcher : EditorWindow
 	}
 
 	bool m_isSaveVer = false;
+	bool m_isNewDown = false;
     #endregion
 
     #region  == EditorWindow Func ===
@@ -133,27 +134,46 @@ public class EDW_Patcher : EditorWindow
 		int height = (int)(position.height - curY - 10);
 		int _width = (int)(this.position.width - 20);
 
+//		NextLine (ref curX, ref curY, 5);
+//		GUI.Label (CreateRect (ref curX, curY,32, 25), "平台:");
+//		m_cfgVer.m_platformType = EditorGUI.TextField (CreateRect (ref curX, curY, 50), m_cfgVer.m_platformType);
+
+//		GUI.Label (CreateRect (ref curX, curY,32, 25), "语言:");
+//		m_cfgVer.m_language = EditorGUI.TextField (CreateRect (ref curX, curY, 50), m_cfgVer.m_language);
+
 		NextLine (ref curX, ref curY, 5);
-		GUI.Label (CreateRect (ref curX, curY,32, 25), "平台:");
-		m_cfgVer.m_platformType = EditorGUI.TextField (CreateRect (ref curX, curY, 50), m_cfgVer.m_platformType);
-
-		GUI.Label (CreateRect (ref curX, curY,32, 25), "语言:");
-		m_cfgVer.m_language = EditorGUI.TextField (CreateRect (ref curX, curY, 50), m_cfgVer.m_language);
-
 		GUI.Label (CreateRect (ref curX, curY,60, 25), "游戏版本:");
 		m_cfgVer.m_gameVerCode = EditorGUI.TextField (CreateRect (ref curX, curY, 80), m_cfgVer.m_gameVerCode);
 
-		GUI.Label (CreateRect (ref curX, curY,70, 25), "Svn版本号:");
-		m_cfgVer.m_svnVerCode = EditorGUI.TextField (CreateRect (ref curX, curY, 100), m_cfgVer.m_svnVerCode);
+		NextLine (ref curX, ref curY, 30);
+		m_isNewDown = EditorGUI.ToggleLeft (CreateRect (ref curX, curY, _width - 90), "整包下载???", m_isNewDown);
+
+		if (m_isNewDown) {
+			NextLine (ref curX, ref curY, 30);
+			GUI.Label (CreateRect (ref curX, curY, 76, 25), "大版本:");
+			EditorGUI.LabelField (CreateRect (ref curX, curY, 110), m_cfgVer.m_bigVerCode);
+
+			if (GUI.Button (CreateRect (ref curX, curY, 110), "刷新大版本")) {
+				m_cfgVer.RefreshBigVerCode ();
+			}
+
+			NextLine (ref curX, ref curY, 30);
+			GUI.Label (CreateRect (ref curX, curY, 110, 25), "Apk(Ipa)下载地址:");
+			m_cfgVer.m_urlNewApkIpa = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 120), m_cfgVer.m_urlNewApkIpa);
+		}
+
+//		GUI.Label (CreateRect (ref curX, curY,70, 25), "Svn版本号:");
+//		m_cfgVer.m_svnVerCode = EditorGUI.TextField (CreateRect (ref curX, curY, 100), m_cfgVer.m_svnVerCode);
+
+//		NextLine (ref curX, ref curY, 30);
+//		GUI.Label (CreateRect (ref curX, curY,76, 25), "上次资源版本:");
+//		EditorGUI.LabelField (CreateRect (ref curX, curY, 100), m_cfgVer.m_lastResVerCode);
 
 		NextLine (ref curX, ref curY, 30);
-		GUI.Label (CreateRect (ref curX, curY,76, 25), "上次资源版本:");
-		EditorGUI.LabelField (CreateRect (ref curX, curY, 100), m_cfgVer.m_lastResVerCode);
-		
 		GUI.Label (CreateRect (ref curX, curY,76, 25), "新资源版本号:");
 		EditorGUI.LabelField (CreateRect (ref curX, curY, 100), m_cfgVer.m_resVerCode);
 		
-		if (GUI.Button (CreateRect (ref curX, curY, 110), "刷新新版本号")) {
+		if (GUI.Button (CreateRect (ref curX, curY, 110), "刷新")) {
 			m_cfgVer.RefreshResVerCode ();
 		}
 

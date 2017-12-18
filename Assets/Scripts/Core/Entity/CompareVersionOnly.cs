@@ -16,6 +16,8 @@ namespace Kernel
 		List<string> needDownFls = null;
 		string strUrl = "";
 
+		CfgVersionOnly cfgTmp = null;
+
 		public CompareVersionOnly():base(){
 			m_cfgOld = new CfgVersionOnly();
 			m_cfgNew = new CfgVersionOnly();
@@ -23,23 +25,28 @@ namespace Kernel
 
 		protected override void _OnST_DownFileList ()
 		{
-			if (startIndex == -1) {
-				needDownFls = ((CfgVersionOnly)m_cfgNew).m_lUrlFls;
-				startIndex = ((CfgVersionOnly)m_cfgOld).m_iIndInFls;
-				endIndex = needDownFls.Count - 1;
-			}
-
-			if (endIndex < 0 || startIndex < 0 || startIndex > endIndex) {
-				if (m_lComFiles.Count <= 0) {
-					m_state = State.Finished;
-				} else {
-					m_state = State.CompareFileList;
+			cfgTmp = ((CfgVersionOnly)m_cfgNew);
+			if (cfgTmp.m_isCanWriteUrlFls) {
+				if (needDownFls == null) {
+					needDownFls = cfgTmp.m_lUrlFls;
+					startIndex = ((CfgVersionOnly)m_cfgOld).m_iIndInFls;
+					endIndex = needDownFls.Count - 1;
 				}
-				return;
-			}
 
-			startIndex++;
-			strUrl = needDownFls [startIndex];
+				if (endIndex < 0 || startIndex < 0 || startIndex > endIndex) {
+					if (m_lComFiles.Count <= 0) {
+						m_state = State.Finished;
+					} else {
+						m_state = State.CompareFileList;
+					}
+					return;
+				}
+
+				startIndex++;
+				strUrl = needDownFls [startIndex];
+			} else {
+				strUrl = cfgTmp.m_urlFilelist;
+			}
 
 			if (m_www == null) {
 				m_www = new WWW (m_cfgNew.GetUrlFilelist(strUrl));
@@ -51,18 +58,22 @@ namespace Kernel
 						m_last = m_lComFiles [m_lComFiles.Count - 1];
 					}
 					m_curr = new CompareFiles ();
+					string _resUrl = m_cfgNew.GetUrlFiles (strUrl);
 					if (m_last != null) {
-						m_curr.Init(m_last.m_cfgOld,m_www.text, m_cfgNew.m_urlRes);
+						m_curr.Init(m_last.m_cfgOld,m_www.text,_resUrl);
 					} else {
-						m_curr.Init (m_www.text, m_cfgNew.m_urlRes);
+						m_curr.Init (m_www.text,_resUrl);
 					}
 
 					m_lComFiles.Add (m_curr);
 
 					m_last = null;
 					m_curr = null;
-
-					m_cfgOld.CloneFromOther (m_cfgNew);
+					if (cfgTmp.m_isCanWriteUrlFls) {
+						m_state = State.CompareFileList;
+					} else {
+						m_cfgOld.CloneFromOther (m_cfgNew);
+					}
 				} else {
 					m_state = State.Error_DownFileList;
 					_LogError(string.Format ("Down FileList Error : url = [{0}] , Error = [{1}]", m_cfgNew.urlPath4FileList, m_www.error));
@@ -80,6 +91,7 @@ namespace Kernel
 			endIndex = -1;
 			needDownFls = null;
 			strUrl = "";
+			cfgTmp = null;
 		}
 
 		static CompareVersionOnly _instance;

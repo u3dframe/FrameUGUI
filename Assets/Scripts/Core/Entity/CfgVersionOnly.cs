@@ -26,7 +26,7 @@ namespace Kernel
 		string m_urlVerOnly = "";
 
 		public CfgVersionOnly() : base(){
-			this.m_isCanWriteUrlFls = true;
+			this.m_isCanWriteUrlFls = false;
 			this.m_iIndInFls = 0;
 
 			#if UNITY_EDITOR
@@ -50,19 +50,21 @@ namespace Kernel
 			if (_jsonData == null)
 				return;
 			
-			this.m_resVerCode = _ToStr(_jsonData[m_kResVerCode]);
-			this.m_lastResVerCode = _ToStr(_jsonData[m_kLastResVerCode]);
-			this.m_gameVerCode = _ToStr(_jsonData[m_kGameVerCode]);
-			this.m_svnVerCode = _ToStr(_jsonData[m_kSvnVerCode]);
-			this.m_platformType = _ToStr(_jsonData[m_kPlatformType]);
-			this.m_language = _ToStr(_jsonData[m_kLanguage]);
-			this.m_urlFilelist = _ToStr(_jsonData[m_kUrlFilelist]);
-			_ToList (_jsonData[m_kUrlFls]);
+			this.m_resVerCode = _ToStr(_jsonData,m_kResVerCode);
+			this.m_gameVerCode = _ToStr(_jsonData,m_kGameVerCode);
+			this.m_urlFilelist = _ToStr(_jsonData,m_kUrlFilelist);
+			this.m_bigVerCode = _ToStr(_jsonData,m_kBigVerCode);
+			this.m_urlNewApkIpa = _ToStr(_jsonData,m_kUrlNewApkIpa);
+
+			if(_jsonData.Keys.Contains(m_kUrlFls))
+				_ToList (_jsonData[m_kUrlFls]);
 		}
 
-		string _ToStr(JsonData jsonData){
-			if (jsonData != null)
-				return jsonData.ToString ();
+		string _ToStr(JsonData jsonData,string key){
+			if (jsonData != null) {
+				if (jsonData.Keys.Contains (key))
+					return jsonData [key].ToString ();
+			}
 			return "";
 		}
 
@@ -74,7 +76,7 @@ namespace Kernel
 
 			string _url = "";
 			for (int i = 0; i < jsonData.Count; i++) {
-				_url = _ToStr (jsonData [i]);
+				_url = jsonData [i].ToString();
 				if (this.m_lUrlFls.Contains (_url))
 					continue;
 				
@@ -120,11 +122,9 @@ namespace Kernel
 			JsonData _jsonData = new JsonData ();
 			_jsonData.SetJsonType (JsonType.Object);
 			_jsonData[m_kResVerCode] = this.m_resVerCode;
-			_jsonData[m_kLastResVerCode] = this.m_lastResVerCode;
 			_jsonData[m_kGameVerCode] = this.m_gameVerCode;
-			_jsonData[m_kSvnVerCode] = this.m_svnVerCode;
-			_jsonData[m_kPlatformType] = this.m_platformType;
-			_jsonData[m_kLanguage] = this.m_language;
+			_jsonData[m_kBigVerCode] = this.m_bigVerCode;
+			_jsonData[m_kUrlNewApkIpa] = this.m_urlNewApkIpa;
 			_jsonData[m_kUrlFilelist] = this.m_urlFilelist;
 
 			if (this.m_isCanWriteUrlFls) {

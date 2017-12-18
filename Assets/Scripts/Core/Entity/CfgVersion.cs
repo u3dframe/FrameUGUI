@@ -51,10 +51,16 @@ namespace Kernel
 		// 文件列表地址
 		public string m_urlFilelist = "";
 
+		// 大版本信息(判断整包更新)
+		public string m_bigVerCode = "";
+
+		// 下载apk,ipa文件地址
+		public string m_urlNewApkIpa = "";
+
 		// 下载资源的地址
 		public string m_urlRes{
 			get{
-				return string.Concat (_FmtUrlPath (m_urlFilelist),"files");
+				return GetUrlFiles (m_urlFilelist);
 			}
 		}
 
@@ -71,6 +77,9 @@ namespace Kernel
 		protected const string m_kLanguage = "language";
 		const string m_kUrlVersion = "url";
 		protected const string m_kUrlFilelist = "url_fl";
+
+		protected const string m_kBigVerCode = "bigVersion";
+		protected const string m_kUrlNewApkIpa = "url_newdown";
 
 		public string urlPath4Ver{
 			get{
@@ -90,10 +99,12 @@ namespace Kernel
 			m_svnVerCode = "0";
 			m_lastResVerCode = "0";
 
-			m_platformType = "CN";
-			m_language = "CN";
+			m_platformType = "";
+			m_language = "";
 			m_urlVersion = URL_HEAD;
 			m_urlFilelist = URL_HEAD;
+			m_urlNewApkIpa = URL_HEAD;
+			this.RefreshBigVerCode ();
 		}
 
 		public void Load(string fn){
@@ -142,6 +153,12 @@ namespace Kernel
 				case m_kUrlFilelist:
 					m_urlFilelist = _arrs [1];
 					break;
+				case m_kBigVerCode:
+					m_bigVerCode = _arrs [1];
+					break;
+				case m_kUrlNewApkIpa:
+					m_urlNewApkIpa = _arrs [1];
+					break;
 				default:
 					break;
 				}
@@ -163,13 +180,17 @@ namespace Kernel
 					using (StreamWriter writer = new StreamWriter (stream)) {
 						string _fmt = "{0}={1}";
 						writer.WriteLine (string.Format (_fmt, m_kResVerCode, m_resVerCode));
-						writer.WriteLine (string.Format (_fmt, m_kLastResVerCode, m_lastResVerCode));
 						writer.WriteLine (string.Format (_fmt, m_kGameVerCode, m_gameVerCode));
-						writer.WriteLine (string.Format (_fmt, m_kSvnVerCode, m_svnVerCode));
+						writer.WriteLine (string.Format (_fmt, m_kUrlFilelist, m_urlFilelist));
+						writer.WriteLine (string.Format (_fmt, m_kBigVerCode, m_bigVerCode));
+						writer.WriteLine (string.Format (_fmt, m_kUrlNewApkIpa, m_urlNewApkIpa));
+						writer.WriteLine (string.Format (_fmt, m_kUrlVersion, m_urlVersion));
+
+						// 可以从外部资源中(比如jar中,或者.mm文件)获取得到
 						writer.WriteLine (string.Format (_fmt, m_kPlatformType, m_platformType));
 						writer.WriteLine (string.Format (_fmt, m_kLanguage, m_language));
-						writer.WriteLine (string.Format (_fmt, m_kUrlFilelist, m_urlFilelist));
-						writer.WriteLine (string.Format (_fmt, m_kUrlVersion, m_urlVersion));
+						writer.WriteLine (string.Format (_fmt, m_kLastResVerCode, m_lastResVerCode));
+						writer.WriteLine (string.Format (_fmt, m_kSvnVerCode, m_svnVerCode));
 					}
 				}
 			} catch{
@@ -181,6 +202,10 @@ namespace Kernel
 		/// </summary>
 		public void RefreshResVerCode(){
 			this.m_resVerCode = System.DateTime.Now.ToString ("yyMMddHHmmss");
+		}
+
+		public void RefreshBigVerCode(){
+			this.m_bigVerCode = System.DateTime.Now.ToString ("yyMMddHHmmss");
 		}
 
 		/// <summary>
@@ -205,6 +230,13 @@ namespace Kernel
 		public void SaveDefault(){
 			this.m_filePath = "";
 			Save ();
+		}
+
+		public bool IsNewDown(string otherBig){
+			if (string.IsNullOrEmpty (otherBig))
+				return false;
+			int v = otherBig.CompareTo (m_bigVerCode);
+			return v > 0;
 		}
 
 		public virtual bool IsUpdate(bool isCheckResUrl = false){
@@ -251,6 +283,8 @@ namespace Kernel
 			this.m_language = other.m_language;
 			this.m_urlVersion = other.m_urlVersion;
 			this.m_urlFilelist = other.m_urlFilelist;
+			this.m_bigVerCode = other.m_bigVerCode;
+			this.m_urlNewApkIpa = other.m_urlNewApkIpa;
 		}
 
 		protected virtual void _OnPlatformChange(){
@@ -258,6 +292,10 @@ namespace Kernel
 
 		public string GetUrlFilelist(string url){
 			return string.Concat (_FmtUrlPath (url),CfgFileList.m_defFileName);
+		}
+
+		public string GetUrlFiles(string url){
+			return string.Concat (_FmtUrlPath (url),"files");
 		}
 
 		static CfgVersion _instance;
