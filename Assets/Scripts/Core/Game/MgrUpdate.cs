@@ -57,6 +57,8 @@ class MgrUpdate : MonoBehaviour {
 
 	float m_limitUpTime = 0.05f,m_currTime = 0;
 
+	Kernel.CompareVersion _comVer{ get { return Kernel.CompareVersion.instance; } }
+
 	// Use this for initialization
 	public void Init (bool isValidVer = true,bool isUnZip = true) {
 		this.m_isValidVersion = isValidVer;
@@ -207,8 +209,6 @@ class MgrUpdate : MonoBehaviour {
 	}
 
 	void _ST_CheckAndDown(){
-		Kernel.CompareVersion _comVer = Kernel.CompareVersion.instance;
-
 		if (_comVer.m_isInit) {
 			_comVer.OnUpdate ();
 
