@@ -74,9 +74,14 @@ namespace Kernel
 					} else {
 						m_state = State.CompareFileList;
 					}
+					m_numCountTry = 0;
 				} else {
-					m_state = State.Error_DownFileList;
-					_LogError(string.Format ("Down FileList Error : url = [{0}] , Error = [{1}]", m_cfgNew.urlPath4FileList, m_www.error));
+					if (m_numLimitTry > m_numCountTry) {
+						m_numCountTry++;
+					} else {
+						m_state = State.Error_DownFileList;
+						_LogError (string.Format ("Down FileList Error : url = [{0}] , Error = [{1}]", m_cfgNew.urlPath4FileList, m_www.error));
+					}
 				}
 				m_www.Dispose ();
 				m_www = null;

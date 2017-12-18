@@ -55,6 +55,7 @@ namespace Kernel
 		protected CompareFiles m_last = null,m_curr = null;
 
 		protected WWW m_www = null;
+		protected int m_numLimitTry = 3,m_numCountTry = 0;
 
 		long m_nSizeAll = 0;
 		long m_nSizeCurr = 0;
@@ -150,9 +151,14 @@ namespace Kernel
 				if (string.IsNullOrEmpty (m_www.error)) { 
 					m_state = State.CheckVersion;
 					m_cfgNew.Init (m_www.text);
+					m_numCountTry = 0;
 				} else {
-					m_state = State.Error_DownVer;
-					_LogError(string.Format ("Down Version Error : url = [{0}] , Error = [{1}]", m_cfgOld.urlPath4Ver, m_www.error));
+					if (m_numLimitTry > m_numCountTry) {
+						m_numCountTry++;
+					} else {
+						m_state = State.Error_DownVer;
+						_LogError (string.Format ("Down Version Error : url = [{0}] , Error = [{1}]", m_cfgOld.urlPath4Ver, m_www.error));
+					}
 				}
 				m_www.Dispose ();
 				m_www = null;
@@ -208,9 +214,14 @@ namespace Kernel
 
 					// 再次进行数据下载
 					m_state = State.DownVersion;
+					m_numCountTry = 0;
 				} else {
-					m_state = State.Error_DownFileList;
-					_LogError(string.Format ("Down FileList Error : url = [{0}] , Error = [{1}]", m_cfgNew.urlPath4FileList, m_www.error));
+					if (m_numLimitTry > m_numCountTry) {
+						m_numCountTry++;
+					} else {
+						m_state = State.Error_DownFileList;
+						_LogError (string.Format ("Down FileList Error : url = [{0}] , Error = [{1}]", m_cfgNew.urlPath4FileList, m_www.error));
+					}
 				}
 				m_www.Dispose ();
 				m_www = null;
@@ -356,6 +367,8 @@ namespace Kernel
 
 			m_callUpdate = null;
 			m_callDownfile = null;
+
+			m_numCountTry = 0;
 
 			this._OnClear ();
 		}
