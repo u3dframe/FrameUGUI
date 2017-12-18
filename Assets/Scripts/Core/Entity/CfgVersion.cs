@@ -54,7 +54,7 @@ namespace Kernel
 		// 下载资源的地址
 		public string m_urlRes{
 			get{
-				return string.Format (_FmtUrlPath (m_urlFilelist),"files");
+				return string.Concat (_FmtUrlPath (m_urlFilelist),"files");
 			}
 		}
 
@@ -74,13 +74,13 @@ namespace Kernel
 
 		public string urlPath4Ver{
 			get{
-				return string.Format (_FmtUrlPath (m_urlVersion), m_defFileName);
+				return string.Concat (_FmtUrlPath (m_urlVersion), m_defFileName);
 			}
 		}
 
 		public string urlPath4FileList{
 			get{
-				return string.Format (_FmtUrlPath (m_urlFilelist),CfgFileList.m_defFileName);
+				return GetUrlFilelist (m_urlFilelist);
 			}
 		}
 
@@ -238,9 +238,9 @@ namespace Kernel
 		protected string _FmtUrlPath(string url){
 			int _index = url.LastIndexOf("/");
 			if (_index == url.Length - 1) {
-				return string.Concat (url, "{0}");
+				return url;
 			}
-			return string.Concat (url, "/{0}");
+			return string.Concat (url, "/");
 		}
 
 		public virtual void CloneFromOther(CfgVersion other){
@@ -254,6 +254,10 @@ namespace Kernel
 		}
 
 		protected virtual void _OnPlatformChange(){
+		}
+
+		public string GetUrlFilelist(string url){
+			return string.Concat (_FmtUrlPath (url),CfgFileList.m_defFileName);
 		}
 
 		static CfgVersion _instance;

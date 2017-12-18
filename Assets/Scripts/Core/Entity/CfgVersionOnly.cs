@@ -140,7 +140,7 @@ namespace Kernel
 
 		protected override void _OnPlatformChange ()
 		{
-			this.m_urlVersion = string.Format(_FmtUrlPath (m_urlVerOnly),m_platformType);
+			this.m_urlVersion = string.Concat(_FmtUrlPath (m_urlVerOnly),m_platformType);
 		}
 
 		static CfgVersionOnly _instance;

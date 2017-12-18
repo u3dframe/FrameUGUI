@@ -43,19 +43,18 @@ namespace Kernel
 		public bool m_isDoDownFiles = false;
 
 		State _m_state = State.None;
-		public State m_state{ get{ return _m_state; } private set{ _m_state = value; } }
+		public State m_state{ get{ return _m_state; } protected set{ _m_state = value; } }
 
 		public bool isFinished{ get{ return m_state == State.Finished; } }
 
 		public bool isPreDown{ get{ return m_state == State.PreDownFiles; } }
 
-		CfgVersion m_cfgOld = new CfgVersion();
-		CfgVersion m_cfgNew = new CfgVersion();
+		protected CfgVersion m_cfgOld,m_cfgNew;
 
-		List<CompareFiles> m_lComFiles = new List<CompareFiles> ();
-		CompareFiles m_last = null,m_curr = null;
+		protected List<CompareFiles> m_lComFiles = new List<CompareFiles> ();
+		protected CompareFiles m_last = null,m_curr = null;
 
-		WWW m_www = null;
+		protected WWW m_www = null;
 
 		long m_nSizeAll = 0;
 		long m_nSizeCurr = 0;
@@ -67,6 +66,11 @@ namespace Kernel
 		System.Action<long,long> m_callDownfile;
 
 		public bool m_isInit { get; private set; }
+
+		public CompareVersion(){
+			m_cfgOld = new CfgVersion();
+			m_cfgNew = new CfgVersion();
+		}
 
 		public void Init(System.Action<int> callUpdate,System.Action<long,long> callDownfile){
 			if (m_isInit)
@@ -174,6 +178,10 @@ namespace Kernel
 				return;
 			}
 
+			_OnST_DownFileList ();
+		}
+
+		protected virtual void _OnST_DownFileList(){
 			if (m_www == null) {
 				m_www = new WWW (m_cfgNew.urlPath4FileList);
 			}
@@ -186,7 +194,7 @@ namespace Kernel
 					m_curr = new CompareFiles ();
 					if (m_last != null) {
 						// m_curr.Init(m_last.m_newContent,m_www.text, m_cfgNew.m_urlRes);
-						 m_curr.Init(m_last.m_cfgOld,m_www.text, m_cfgNew.m_urlRes);
+						m_curr.Init(m_last.m_cfgOld,m_www.text, m_cfgNew.m_urlRes);
 					} else {
 						m_curr.Init (m_www.text, m_cfgNew.m_urlRes);
 					}
@@ -272,7 +280,7 @@ namespace Kernel
 			Clear ();
 		}
 
-		void _LogError(string msg){
+		protected void _LogError(string msg){
 			UnityEngine.Debug.LogError (msg);
 		}
 			
@@ -348,6 +356,11 @@ namespace Kernel
 
 			m_callUpdate = null;
 			m_callDownfile = null;
+
+			this._OnClear ();
+		}
+
+		protected virtual void _OnClear(){
 		}
 
 		static CompareVersion _instance;
