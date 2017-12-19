@@ -232,10 +232,13 @@ namespace Kernel
 			Save ();
 		}
 
-		public bool IsNewDown(string otherBig){
-			if (string.IsNullOrEmpty (otherBig))
+		public bool IsNewDown(CfgVersion other){
+			if (other == null)
 				return false;
-			int v = otherBig.CompareTo (m_bigVerCode);
+			
+			if (string.IsNullOrEmpty (other.m_bigVerCode))
+				return false;
+			int v = other.m_bigVerCode.CompareTo (m_bigVerCode);
 			return v > 0;
 		}
 

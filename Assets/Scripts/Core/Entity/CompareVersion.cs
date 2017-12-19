@@ -23,7 +23,7 @@ namespace Kernel
 			PreDownFiles = 6,
 			DownFiles = 7,
 			SaveVersionAndFileList = 8,
-
+			NeedDownApkIpa = 9, // 需要下载新的apk,或者ipa文件
 			Finished = 10,
 
 			// 下载错误(与DownloadFile 错误一致）
@@ -49,7 +49,8 @@ namespace Kernel
 
 		public bool isPreDown{ get{ return m_state == State.PreDownFiles; } }
 
-		protected CfgVersion m_cfgOld,m_cfgNew;
+		protected CfgVersion m_cfgOld,_m_cfgNew;
+		public State m_cfgNew{ get{ return _m_cfgNew; } protected set{ _m_cfgNew = value; } }
 
 		protected List<CompareFiles> m_lComFiles = new List<CompareFiles> ();
 		protected CompareFiles m_last = null,m_curr = null;
@@ -166,6 +167,11 @@ namespace Kernel
 		}
 
 		void _ST_CheckVersion(){
+			if(m_cfgOld.IsNewDown(m_cfgNew)){
+				m_state = State.NeedDownApkIpa;
+				return;
+			}
+				
 			if (m_cfgOld.IsUpdate4Other (m_cfgNew)) {
 				m_state = State.DownFileList;
 			} else {
@@ -328,6 +334,9 @@ namespace Kernel
 				break;
 			case State.Error_DownFileList:
 				nState = 14;
+				break;
+			case State.NeedDownApkIpa:
+				nState = 99;
 				break;
 			default:
 				break;

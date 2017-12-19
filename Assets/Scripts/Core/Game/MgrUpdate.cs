@@ -24,6 +24,8 @@ class MgrUpdate : MonoBehaviour {
 		WaitCommand = 9,
 		Completed = 10,
 
+		NeedDownApkIpa = 99,
+
 		Error_UnZip_Init = 11,// 首次解压文件错误(只执行一次)
 		Error_Net = 12,
 		Error_Ver = 13,
@@ -37,7 +39,7 @@ class MgrUpdate : MonoBehaviour {
 	bool isError{
 		get{
 			return m_state == State.Error_UnZip_Init || m_state == State.Error_Net || m_state == State.Error_Ver 
-				|| m_state == State.Error_FileList || m_state == State.Error_DownFiles;
+				|| m_state == State.Error_FileList || m_state == State.Error_DownFiles || m_state == State.NeedDownApkIpa;
 		}
 	}
 
@@ -305,6 +307,8 @@ class MgrUpdate : MonoBehaviour {
 		case State.Error_FileList:
 			break;
 		case State.Error_DownFiles:
+			break;
+		case State.NeedDownApkIpa:
 			break;
 		default:
 			break;
