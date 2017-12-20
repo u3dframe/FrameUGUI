@@ -50,7 +50,7 @@ namespace Kernel
 		public bool isPreDown{ get{ return m_state == State.PreDownFiles; } }
 
 		protected CfgVersion m_cfgOld,_m_cfgNew;
-		public State m_cfgNew{ get{ return _m_cfgNew; } protected set{ _m_cfgNew = value; } }
+		public CfgVersion m_cfgNew{ get{ return _m_cfgNew; } protected set{ _m_cfgNew = value; } }
 
 		protected List<CompareFiles> m_lComFiles = new List<CompareFiles> ();
 		protected CompareFiles m_last = null,m_curr = null;
