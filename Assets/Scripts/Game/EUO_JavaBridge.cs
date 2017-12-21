@@ -39,6 +39,7 @@ public class EUO_JavaBridge : MonoBehaviour {
 			return;
 		}
 		jcBridge = new AndroidJavaClass( NM_JAVA_BRIDGE_CLASS );
+		jcBridge.CallStatic( NM_JAVA_METHOD_INIT,NM_Gobj ,NM_ON_RESULT_FUNC);
 #endif
 	}
 	
@@ -46,7 +47,6 @@ public class EUO_JavaBridge : MonoBehaviour {
 		this._callBack = onResult;
 #if UNITY_ANDROID
 		InitBridge();
-		jcBridge.CallStatic( NM_JAVA_METHOD_INIT,NM_Gobj ,NM_ON_RESULT_FUNC);
 #endif
 	}
 	

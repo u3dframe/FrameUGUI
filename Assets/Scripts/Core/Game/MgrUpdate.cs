@@ -121,6 +121,15 @@ class MgrUpdate : MonoBehaviour {
 		m_state = State.Init;
 
 		m_isRunning = true;
+
+		#if UNITY_EDITOR
+		#elif UNITY_ANDROID
+		EUO_JavaBridge.instance.Init ((strJson) => {
+			Kernel.CfgPackage.instance.Init(strJson);
+		});
+
+		EUO_JavaBridge.instance.SendToJava ("{\"cmd\":\"getPackageInfo\"}");
+		#endif
 	}
 
 	void _LoadLanguage(){
@@ -181,7 +190,14 @@ class MgrUpdate : MonoBehaviour {
 
 	void _ST_Init(){
 		if (m_isInit) {
+			#if UNITY_EDITOR
 			m_state = State.UnZipResource;
+			#elif UNITY_ANDROID
+			if (Kernel.CfgPackage.instance.m_isInit) {
+				EUO_JavaBridge.instance.Init (null);
+				m_state = State.UnZipResource;
+			}
+			#endif
 			return;
 		}
 
