@@ -32,6 +32,11 @@ namespace Kernel
 			#else
 			this.m_urlVersion = "http://192.168.30:8006/z1";
 			#endif
+
+			// versiton地址从package对象里面获得
+			if (!string.IsNullOrEmpty (CfgPackage.instance.m_urlVersion)) {
+				this.m_urlVersion = CfgPackage.instance.m_urlVersion;
+			}
 		}
 
 		protected override void _OnInit (string content)
