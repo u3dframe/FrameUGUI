@@ -29,22 +29,6 @@ namespace Kernel
 		// git,或者svn版本号
 		public string m_svnVerCode = "";
 
-		// 平台标识
-		string _m_platformType = "";
-		public string m_platformType{
-			get{ return _m_platformType; }
-			set{
-				bool _isChg = !_m_platformType.Equals (value);
-				_m_platformType = value; 
-				if (_isChg) {
-					_OnPlatformChange ();
-				}
-			}
-		}
-
-		// 基础语言类型
-		public string m_language = "";
-
 		// 版本地址
 		public string m_urlVersion = "";
 
@@ -73,9 +57,7 @@ namespace Kernel
 		protected const string m_kLastResVerCode = "lastResVersion";
 		protected const string m_kGameVerCode = "version";
 		protected const string m_kSvnVerCode = "svnVersion";
-		protected const string m_kPlatformType = "platform";
-		protected const string m_kLanguage = "language";
-		const string m_kUrlVersion = "url";
+		const string m_kUrlVersion = "url_ver";
 		protected const string m_kUrlFilelist = "url_fl";
 
 		protected const string m_kBigVerCode = "bigVersion";
@@ -99,8 +81,6 @@ namespace Kernel
 			m_svnVerCode = "0";
 			m_lastResVerCode = "0";
 
-			m_platformType = "";
-			m_language = "";
 			m_urlVersion = URL_HEAD;
 			m_urlFilelist = URL_HEAD;
 			m_urlNewApkIpa = URL_HEAD;
@@ -140,12 +120,6 @@ namespace Kernel
 					break;
 				case m_kSvnVerCode:
 					m_svnVerCode = _arrs [1];
-					break;
-				case m_kPlatformType:
-					m_platformType = _arrs [1];
-					break;
-				case m_kLanguage:
-					m_language = _arrs [1];
 					break;
 				case m_kUrlVersion:
 					m_urlVersion = _arrs [1];
@@ -187,8 +161,6 @@ namespace Kernel
 						writer.WriteLine (string.Format (_fmt, m_kUrlVersion, m_urlVersion));
 
 						// 可以从外部资源中(比如jar中,或者.mm文件)获取得到
-						writer.WriteLine (string.Format (_fmt, m_kPlatformType, m_platformType));
-						writer.WriteLine (string.Format (_fmt, m_kLanguage, m_language));
 						writer.WriteLine (string.Format (_fmt, m_kLastResVerCode, m_lastResVerCode));
 						writer.WriteLine (string.Format (_fmt, m_kSvnVerCode, m_svnVerCode));
 					}
@@ -282,15 +254,11 @@ namespace Kernel
 			this.m_resVerCode = other.m_resVerCode;
 			this.m_gameVerCode = other.m_gameVerCode;
 			this.m_svnVerCode = other.m_svnVerCode;
-			this.m_platformType = other.m_platformType;
-			this.m_language = other.m_language;
 			this.m_urlVersion = other.m_urlVersion;
 			this.m_urlFilelist = other.m_urlFilelist;
 			this.m_bigVerCode = other.m_bigVerCode;
 			this.m_urlNewApkIpa = other.m_urlNewApkIpa;
-		}
-
-		protected virtual void _OnPlatformChange(){
+			this.m_content = other.m_content;
 		}
 
 		public string GetUrlFilelist(string url){

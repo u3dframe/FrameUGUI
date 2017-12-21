@@ -1,0 +1,99 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.IO;
+using LitJson;
+
+namespace Kernel
+{
+	/// <summary>
+	/// 类名 : 包体配置
+	/// 作者 : Canyon / 龚阳辉
+	/// 日期 : 2017-12-21 10:35
+	/// 功能 : 放在plugins下面 (android/assets里面cfg_xx.json里面)
+	/// </summary>
+	public class CfgPackage  {
+		
+		// 平台标识 - 字符串
+		public string m_platformName = "";
+
+		// 平台标识 - ID
+		public string m_platformID = "";
+
+		// 基础语言类型
+		public string m_language = "";
+
+		// 版本地址
+		public string m_urlVersion = "";
+
+		// 服务器入口地址(登录服务器,或者取得服务器列表)
+		public string m_urlSv = "";
+
+		public string m_content{ get; private set; }
+
+		const string m_kPlatformName = "platform";
+		const string m_kPlatformID = "platformID";
+		const string m_kLanguage = "language";
+		const string m_kUrlVersion = "url_ver";
+		const string m_kUrlSV = "url_sv";
+
+		public bool m_isInit{ get; private set; }
+
+		public CfgPackage(){
+		}
+
+		public void Init(string content){
+			if(string.IsNullOrEmpty(content)){
+				return;
+			}
+			this.m_isInit = true;
+			this.m_content = content;
+			_OnInit (this.m_content);
+		}
+
+		protected virtual void _OnInit(string content){
+			JsonData _jsonData = null;
+			try {
+				_jsonData = JsonMapper.ToObject (content);
+			} catch{				
+			}
+
+			if (_jsonData == null)
+				return;
+			
+			this.m_platformName = _ToStr(_jsonData,m_kPlatformName);
+			this.m_platformID = _ToStr(_jsonData,m_kPlatformID);
+			this.m_language = _ToStr(_jsonData,m_kLanguage);
+			this.m_urlVersion = _ToStr(_jsonData,m_kUrlVersion);
+			this.m_urlSv = _ToStr(_jsonData,m_kUrlSV);
+		}
+
+		string _ToStr(JsonData jsonData,string key){
+			if (jsonData != null) {
+				if (jsonData.Keys.Contains (key))
+					return jsonData [key].ToString ();
+			}
+			return "";
+		}
+
+		public virtual void CloneFromOther(CfgPackage other){
+			this.m_platformName = other.m_platformName;
+			this.m_platformID = other.m_platformID;
+			this.m_language = other.m_language;
+			this.m_urlVersion = other.m_urlVersion;
+			this.m_urlSv = other.m_urlSv;
+
+			this.m_content = other.m_content;
+			this.m_isInit = other.m_isInit;
+		}
+
+		static CfgPackage _instance;
+		static public CfgPackage instance{
+			get{ 
+				if (_instance == null) {
+					_instance = new CfgPackage ();
+				}
+				return _instance;
+			}
+		}
+	}
+}

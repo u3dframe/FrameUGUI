@@ -23,19 +23,15 @@ namespace Kernel
 		// 当前下载filelist的地址在列表中的位置
 		public int m_iIndInFls { get; private set; }
 
-		string m_urlVerOnly = "";
-
 		public CfgVersionOnly() : base(){
 			this.m_isCanWriteUrlFls = false;
 			this.m_iIndInFls = 0;
 
 			#if UNITY_EDITOR
-			this.m_urlVerOnly = "http://192.168.30:8006/z1";
+			this.m_urlVersion = "http://192.168.30:8006/z1";
 			#else
-			this.m_urlVerOnly = "http://192.168.30:8006/z1";
+			this.m_urlVersion = "http://192.168.30:8006/z1";
 			#endif
-
-			_OnPlatformChange ();
 		}
 
 		protected override void _OnInit (string content)
@@ -136,11 +132,6 @@ namespace Kernel
 			}
 
 			File.WriteAllText (this.m_filePath, _jsonData.ToJson());
-		}
-
-		protected override void _OnPlatformChange ()
-		{
-			this.m_urlVersion = string.Concat(_FmtUrlPath (m_urlVerOnly),m_platformType);
 		}
 
 		static CfgVersionOnly _instance;
