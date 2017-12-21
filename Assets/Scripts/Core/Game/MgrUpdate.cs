@@ -128,7 +128,7 @@ class MgrUpdate : MonoBehaviour {
 			Kernel.CfgPackage.instance.Init(strJson);
 		});
 
-		EUO_JavaBridge.instance.SendToJava ("{\"cmd\":\"getPackageInfo\"}");
+		EUO_JavaBridge.instance.SendToJava ("{\"cmd\":\"getPackageInfo\",\"filename\":\"cfg_z1.json\"}");
 		#endif
 	}
 
