@@ -187,6 +187,10 @@ public class EDW_Patcher : EditorWindow
 		m_cfgVer.m_urlFilelist = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlFilelist);
 
 		NextLine (ref curX, ref curY, 30);
+		GUI.Label (CreateRect (ref curX, curY,80, 25), "server地址:");
+		m_cfgVer.m_urlSv = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlSv);
+
+		NextLine (ref curX, ref curY, 30);
 
 		int botY = (int)(height - 30);
 		if (botY > curY) {

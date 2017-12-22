@@ -56,6 +56,7 @@ namespace Kernel
 			this.m_urlFilelist = _ToStr(_jsonData,m_kUrlFilelist);
 			this.m_bigVerCode = _ToStr(_jsonData,m_kBigVerCode);
 			this.m_urlNewApkIpa = _ToStr(_jsonData,m_kUrlNewApkIpa);
+			this.m_urlSv = _ToStr(_jsonData,m_kUrlSV);
 
 			if(_jsonData.Keys.Contains(m_kUrlFls))
 				_ToList (_jsonData[m_kUrlFls]);
@@ -127,6 +128,7 @@ namespace Kernel
 			_jsonData[m_kBigVerCode] = this.m_bigVerCode;
 			_jsonData[m_kUrlNewApkIpa] = this.m_urlNewApkIpa;
 			_jsonData[m_kUrlFilelist] = this.m_urlFilelist;
+			_jsonData[m_kUrlSV] = this.m_urlSv;
 
 			if (this.m_isCanWriteUrlFls) {
 				if (!this.m_lUrlFls.Contains (this.m_urlFilelist)) {

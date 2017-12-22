@@ -25,16 +25,12 @@ namespace Kernel
 		// 版本地址
 		public string m_urlVersion = "";
 
-		// 服务器入口地址(登录服务器,或者取得服务器列表)
-		public string m_urlSv = "";
-
 		public string m_content{ get; private set; }
 
 		const string m_kPlatformName = "platform";
 		const string m_kPlatformID = "platformID";
 		const string m_kLanguage = "language";
 		const string m_kUrlVersion = "url_ver";
-		const string m_kUrlSV = "url_sv";
 
 		public bool m_isInit{ get; private set; }
 
@@ -64,7 +60,6 @@ namespace Kernel
 			this.m_platformID = _ToStr(_jsonData,m_kPlatformID);
 			this.m_language = _ToStr(_jsonData,m_kLanguage);
 			this.m_urlVersion = _ToStr(_jsonData,m_kUrlVersion);
-			this.m_urlSv = _ToStr(_jsonData,m_kUrlSV);
 		}
 
 		string _ToStr(JsonData jsonData,string key){
@@ -80,7 +75,6 @@ namespace Kernel
 			this.m_platformID = other.m_platformID;
 			this.m_language = other.m_language;
 			this.m_urlVersion = other.m_urlVersion;
-			this.m_urlSv = other.m_urlSv;
 
 			this.m_content = other.m_content;
 			this.m_isInit = other.m_isInit;

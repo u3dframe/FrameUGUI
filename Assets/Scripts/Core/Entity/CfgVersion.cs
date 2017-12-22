@@ -41,6 +41,9 @@ namespace Kernel
 		// 下载apk,ipa文件地址
 		public string m_urlNewApkIpa = "";
 
+		// 服务器入口地址(登录服务器,或者取得服务器列表)
+		public string m_urlSv = "";
+
 		// 下载资源的地址
 		public string m_urlRes{
 			get{
@@ -62,6 +65,7 @@ namespace Kernel
 
 		protected const string m_kBigVerCode = "bigVersion";
 		protected const string m_kUrlNewApkIpa = "url_newdown";
+		protected const string m_kUrlSV = "url_sv";
 
 		public string urlPath4Ver{
 			get{
@@ -84,6 +88,7 @@ namespace Kernel
 			m_urlVersion = URL_HEAD;
 			m_urlFilelist = URL_HEAD;
 			m_urlNewApkIpa = URL_HEAD;
+			m_urlSv = URL_HEAD;
 			this.RefreshBigVerCode ();
 		}
 
@@ -133,6 +138,9 @@ namespace Kernel
 				case m_kUrlNewApkIpa:
 					m_urlNewApkIpa = _arrs [1];
 					break;
+				case m_kUrlSV:
+					m_urlSv = _arrs [1];
+					break;
 				default:
 					break;
 				}
@@ -158,6 +166,7 @@ namespace Kernel
 						writer.WriteLine (string.Format (_fmt, m_kUrlFilelist, m_urlFilelist));
 						writer.WriteLine (string.Format (_fmt, m_kBigVerCode, m_bigVerCode));
 						writer.WriteLine (string.Format (_fmt, m_kUrlNewApkIpa, m_urlNewApkIpa));
+						writer.WriteLine (string.Format (_fmt, m_kUrlSV, m_urlSv));
 						writer.WriteLine (string.Format (_fmt, m_kUrlVersion, m_urlVersion));
 
 						// 可以从外部资源中(比如jar中,或者.mm文件)获取得到
@@ -258,6 +267,7 @@ namespace Kernel
 			this.m_urlFilelist = other.m_urlFilelist;
 			this.m_bigVerCode = other.m_bigVerCode;
 			this.m_urlNewApkIpa = other.m_urlNewApkIpa;
+			this.m_urlSv = other.m_urlSv;
 			this.m_content = other.m_content;
 		}
 
