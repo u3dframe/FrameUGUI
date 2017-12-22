@@ -44,6 +44,17 @@ namespace Kernel
 		// 服务器入口地址(登录服务器,或者取得服务器列表)
 		public string m_urlSv = "";
 
+		// 服务器列表
+		public string urlSvlist{
+			get{
+				#if UNITY_EDITOR
+				return "http://192.168.30:8006/z1/svlist.json";
+				#elif
+				return m_urlSv;
+				#endif
+			}
+		}
+
 		// 下载资源的地址
 		public string m_urlRes{
 			get{
