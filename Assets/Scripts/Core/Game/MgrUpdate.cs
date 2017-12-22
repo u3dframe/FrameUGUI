@@ -261,6 +261,7 @@ class MgrUpdate : MonoBehaviour {
 	void _ST_Completed(){
 		m_isRunning = false;
 		// 进入游戏
+		// Kernel.CfgVersionOnly.instance.LoadDefault();
 	}
 
 	void _ReState(bool isWaitCommand = false){
