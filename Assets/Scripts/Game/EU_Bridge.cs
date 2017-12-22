@@ -12,6 +12,7 @@ public static class EU_Bridge {
 	public delegate void CallBackBridge (string data);
 
 	static public void Init(CallBackBridge onResult) {
+#if UNITY_EDITOR
 #if UNITY_ANDROID
 		EUO_JavaBridge.CallBackBridge _call = null;
 		if (onResult != null) {
@@ -22,6 +23,7 @@ public static class EU_Bridge {
 	}
 	
 	static public void Send(string param){
+#if UNITY_EDITOR
 #if UNITY_ANDROID
 		EUO_JavaBridge.instance.SendToJava (param);
 #endif
