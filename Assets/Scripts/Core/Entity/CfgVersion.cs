@@ -49,7 +49,7 @@ namespace Kernel
 			get{
 				#if UNITY_EDITOR
 				return "http://192.168.30:8006/z1/svlist.json";
-				#elif
+				#else
 				return m_urlSv;
 				#endif
 			}
