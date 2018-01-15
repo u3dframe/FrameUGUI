@@ -77,6 +77,7 @@ namespace Kernel.Core{
 
 				if (isLuaFile) {
 					_fpRelative = fp.Replace (dirSource, "Lua");
+					_fpRelative = _fpRelative.Replace ("LuaLua/", "Lua/");
 				}else{
 					indexRelative = fp.IndexOf (GameFile.m_curPlatform);
 					if (indexRelative < 0)
@@ -154,6 +155,10 @@ namespace Kernel.Core{
 			}
 
 			_CopyFiles (GameFile.m_dirResCache, GameFile.m_dirStreaming, false, null);
+
+			// 拷贝版本文件
+			string _fpdest = string.Concat(GameFile.m_dirStreaming,"version.txt");
+			File.Copy (GameFile.GetFilePath ("version.txt"), _fpdest, true);
 		}
 
 		static void _CopyFilelistToRes(){

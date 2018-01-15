@@ -208,6 +208,10 @@ public class EDW_Patcher : EditorWindow
 			_ZipAllAssets ();
 		}
 
+		if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Build(全部)")) {
+			_BuildAllAssets ();
+		}
+
 		if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Zip(补丁)")) {
 			_ZipPatche ();
 		 }
@@ -231,6 +235,10 @@ public class EDW_Patcher : EditorWindow
 
 	void _ZipAllAssets(){
 		Kernel.Core.EL_Patcher.BuildAll (true);
+	}
+
+	void _BuildAllAssets(){
+		Kernel.Core.EL_Patcher.BuildAll (false);
 	}
 
 	void _ZipPatche(){
