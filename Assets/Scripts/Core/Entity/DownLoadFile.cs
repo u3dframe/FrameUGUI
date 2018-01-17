@@ -132,15 +132,17 @@ namespace Kernel
 				
 			if (m_www.isDone) {
 				if (string.IsNullOrEmpty (m_www.error)) { 
-					m_state = State.WriteFile;
-					_WriteFile ();
-				} else {
-					if (m_numLimitTry > m_numCountTry) {
-						m_numCountTry++;
-					}else{
-						m_state = State.Error_Net;
-						_NewError (string.Format ("Down Load Error : url = [{0}] , Error = [{1}]", m_realUrl, m_www.error));
+					string _code = ALG.CRC32Class.GetCRC32 (m_www.bytes);
+					if (m_compareCode.Equals (_code)) {
+						m_state = State.WriteFile;
+						_WriteFile ();
 					}
+				}
+				if (m_numLimitTry > m_numCountTry) {
+					m_numCountTry++;
+				}else{
+					m_state = State.Error_Net;
+					_NewError (string.Format ("Down Load Error : url = [{0}] , Error = [{1}]", m_realUrl, m_www.error));
 				}
 				m_www.Dispose ();
 				m_www = null;
