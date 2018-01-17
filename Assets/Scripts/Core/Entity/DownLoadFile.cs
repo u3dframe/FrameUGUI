@@ -40,7 +40,21 @@ namespace Kernel
 		public System.Exception m_error{ get; private set;}
 
 		// 下载地址
-		public string m_url = "";
+		private string _m_url = "";
+		private string[] _arrsUrls = null;
+		private int _indexUrl = -1;
+		public string m_url{
+			get{ return _m_url; }
+			set{
+				if (value == null) {
+					_arrsUrls = null;
+				} else if (!value.Equals (_m_url)) {
+					_arrsUrls = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);
+					_indexUrl = -1;
+				}
+				_m_url = value;
+			}
+		}
 
 		string m_realUrl = "";
 		WWW m_www = null;
@@ -54,9 +68,19 @@ namespace Kernel
 		bool m_isRunning = true;
 
 		public DownLoadFile():base(){
+			m_resPackage = "files";
 		}
 
 		public DownLoadFile(string row):base(row){
+			m_resPackage = "files";
+		}
+
+		string _ReUrlPath(string url){
+			return CfgVersion.ReUrlPath (url);
+		}
+
+		string _GetUrl(string[] arrs,string defUrl,ref int index){
+			return CfgVersion.GetUrl(arrs,defUrl,ref index);
 		}
 
 		public void OnUpdate(){
@@ -82,19 +106,16 @@ namespace Kernel
 			m_isRunning = true;
 
 			if (m_www == null) {
-				if (string.IsNullOrEmpty (this.m_url)) {
+				if (string.IsNullOrEmpty (m_url)) {
 					m_state = State.Error_Url;
 					_NewError(string.Format("Url Error : url is null"));
 					return;
 				}
 
-				int _index = m_url.LastIndexOf("/");
-				string _fmt = "{0}/{1}?time={2}";
-				if (_index == m_url.Length - 1) {
-					_fmt = "{0}{1}?time={2}";
-				}
+				string _fmt = "{0}{1}?time={2}";
+				string _url = _ReUrlPath(_GetUrl(_arrsUrls,m_url,ref _indexUrl));
 
-				m_realUrl = string.Format (_fmt, this.m_url,this.m_filePath,System.DateTime.Now.Ticks);
+				m_realUrl = string.Format (_fmt,_url,m_filePath,System.DateTime.Now.Ticks);
 				m_www = new WWW(m_realUrl);
 
 				m_state = State.DownLoad;

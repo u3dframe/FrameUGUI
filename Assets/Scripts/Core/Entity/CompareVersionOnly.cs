@@ -58,11 +58,10 @@ namespace Kernel
 						m_last = m_lComFiles [m_lComFiles.Count - 1];
 					}
 					m_curr = new CompareFiles ();
-					string _resUrl = m_cfgNew.GetUrlFiles (strUrl);
 					if (m_last != null) {
-						m_curr.Init(m_last.m_cfgOld,m_www.text,_resUrl);
+						m_curr.Init(m_last.m_cfgOld,m_www.text,strUrl);
 					} else {
-						m_curr.Init (m_www.text,_resUrl);
+						m_curr.Init (m_www.text,strUrl);
 					}
 
 					m_lComFiles.Add (m_curr);

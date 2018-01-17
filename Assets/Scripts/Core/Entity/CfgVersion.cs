@@ -29,11 +29,39 @@ namespace Kernel
 		// git,或者svn版本号
 		public string m_svnVerCode = "";
 
-		// 版本地址
-		public string m_urlVersion = "";
+		// 版本地址(支持多地址,下载同文件模式(避免地址被攻击)
+		private string _m_urlVersion = "";
+		private string[] _arrsVers = null;
+		private int _indVers = -1;
+		public string m_urlVersion{
+			get{ return _m_urlVersion; }
+			set{
+				if (value == null) {
+					_arrsVers = null;
+				} else if (!value.Equals (_m_urlVersion)) {
+					_arrsVers = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);
+					_indVers = -1;
+				}
+				_m_urlVersion = value;
+			}
+		}
 
 		// 文件列表地址
-		public string m_urlFilelist = "";
+		private string _m_urlFilelist = "";
+		private string[] _arrsFlts = null;
+		private int _indFlts = -1;
+		public string m_urlFilelist{
+			get{ return _m_urlFilelist; }
+			set{
+				if (value == null) {
+					_arrsFlts = null;
+				} else if (!value.Equals (_m_urlFilelist)) {
+					_arrsFlts = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);
+					_indFlts = -1;
+				}
+				_m_urlFilelist = value;
+			}
+		}
 
 		// 大版本信息(判断整包更新)
 		public string m_bigVerCode = "";
@@ -58,7 +86,7 @@ namespace Kernel
 		// 下载资源的地址
 		public string m_urlRes{
 			get{
-				return GetUrlFiles (m_urlFilelist);
+				return m_urlFilelist;
 			}
 		}
 
@@ -80,13 +108,15 @@ namespace Kernel
 
 		public string urlPath4Ver{
 			get{
-				return string.Concat (_FmtUrlPath (m_urlVersion), m_defFileName);
+				string _tmpUrl = GetUrl(_arrsVers, m_urlVersion,ref _indVers);
+				return string.Concat (ReUrlPath (_tmpUrl), m_defFileName);
 			}
 		}
 
 		public string urlPath4FileList{
 			get{
-				return GetUrlFilelist (m_urlFilelist);
+				string _tmpUrl = GetUrl(_arrsFlts, m_urlFilelist,ref _indFlts);
+				return GetUrlFilelist (_tmpUrl);
 			}
 		}
 
@@ -262,14 +292,6 @@ namespace Kernel
 			return false;
 		}
 
-		protected string _FmtUrlPath(string url){
-			int _index = url.LastIndexOf("/");
-			if (_index == url.Length - 1) {
-				return url;
-			}
-			return string.Concat (url, "/");
-		}
-
 		public virtual void CloneFromOther(CfgVersion other){
 			this.m_resVerCode = other.m_resVerCode;
 			this.m_gameVerCode = other.m_gameVerCode;
@@ -283,11 +305,28 @@ namespace Kernel
 		}
 
 		public string GetUrlFilelist(string url){
-			return string.Concat (_FmtUrlPath (url),CfgFileList.m_defFileName);
+			return string.Concat (ReUrlPath (url),CfgFileList.m_defFileName);
 		}
 
-		public string GetUrlFiles(string url){
-			return string.Concat (_FmtUrlPath (url),"files");
+		static public string ReUrlPath(string url){
+			int _index = url.LastIndexOf("/");
+			if (_index == url.Length - 1) {
+				return url;
+			}
+			return string.Concat (url, "/");
+		}
+
+		static public string GetUrl(string[] arrs,string defUrl,ref int index){
+			string _tmpUrl = defUrl;
+			if (arrs != null && arrs.Length > 1) {
+				if (index < 0) {
+					index = Random.Range (0, arrs.Length - 1);
+				}
+				index %= arrs.Length;
+				_tmpUrl = arrs [index];
+				index++;
+			}
+			return _tmpUrl;
 		}
 
 		static CfgVersion _instance;
