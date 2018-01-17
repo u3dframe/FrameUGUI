@@ -32,7 +32,7 @@ namespace Kernel
 		// 版本地址(支持多地址,下载同文件模式(避免地址被攻击)
 		private string _m_urlVersion = "";
 		private string[] _arrsVers = null;
-		private int _indVers = -1;
+		private int _indVers = 0;
 		public string m_urlVersion{
 			get{ return _m_urlVersion; }
 			set{
@@ -40,7 +40,7 @@ namespace Kernel
 					_arrsVers = null;
 				} else if (!value.Equals (_m_urlVersion)) {
 					_arrsVers = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);
-					_indVers = -1;
+					_indVers = 0;
 				}
 				_m_urlVersion = value;
 			}
@@ -63,6 +63,9 @@ namespace Kernel
 			}
 		}
 
+		// file list 文件的标识值
+		public string m_codeFilelist = "";
+
 		// 大版本信息(判断整包更新)
 		public string m_bigVerCode = "";
 
@@ -70,7 +73,26 @@ namespace Kernel
 		public string m_urlNewApkIpa = "";
 
 		// 服务器入口地址(登录服务器,或者取得服务器列表)
-		public string m_urlSv = "";
+		private string _m_urlSv = "";
+		protected string[] _arrsSvs = null;
+		protected int _indSvs = -1;
+		public string m_urlSv{
+			get{ return _m_urlSv; }
+			set{
+				if (value == null) {
+					_arrsSvs = null;
+				} else if (!value.Equals (_m_urlSv)) {
+					_arrsSvs = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);
+					_indSvs = -1;
+				}
+				_m_urlSv = value;
+			}
+		}
+
+		// 包头
+		public string m_pkgVersion = "and_cn_cm";
+		public string m_pkgFilelist = "and_cn_cm";
+		public string m_pkgFiles = "files";
 
 		// 服务器列表
 		public string urlSvlist{
@@ -78,7 +100,7 @@ namespace Kernel
 				#if UNITY_EDITOR
 				return "http://192.168.30:8006/z1/svlist.json";
 				#else
-				return m_urlSv;
+				return ReUrlTime(GetUrl(_arrsSvs,m_urlSv,ref _indSvs));
 				#endif
 			}
 		}
@@ -106,10 +128,15 @@ namespace Kernel
 		protected const string m_kUrlNewApkIpa = "url_newdown";
 		protected const string m_kUrlSV = "url_sv";
 
+		protected const string m_kCodeFilelist = "code_fl";
+		protected const string m_kPkgVersion = "pkg_ver";
+		protected const string m_kPkgFilelist = "pkg_fl";
+		protected const string m_kPkgFiles = "pkg_fls";
+
 		public string urlPath4Ver{
 			get{
 				string _tmpUrl = GetUrl(_arrsVers, m_urlVersion,ref _indVers);
-				return string.Concat (ReUrlPath (_tmpUrl), m_defFileName);
+				return ReUrlTime(_tmpUrl, m_defFileName);
 			}
 		}
 
@@ -302,13 +329,18 @@ namespace Kernel
 			this.m_urlNewApkIpa = other.m_urlNewApkIpa;
 			this.m_urlSv = other.m_urlSv;
 			this.m_content = other.m_content;
+
+			this.m_codeFilelist = other.m_codeFilelist;
+			this.m_pkgVersion = other.m_pkgVersion;
+			this.m_pkgFilelist = other.m_pkgFilelist;
+			this.m_pkgFiles = other.m_pkgFiles;
 		}
 
 		public string GetUrlFilelist(string url){
-			return string.Concat (ReUrlPath (url),CfgFileList.m_defFileName);
+			return ReUrlTime (url,CfgFileList.m_defFileName);
 		}
 
-		static public string ReUrlPath(string url){
+		static public string ReUrlEnd(string url){
 			int _index = url.LastIndexOf("/");
 			if (_index == url.Length - 1) {
 				return url;
@@ -327,6 +359,15 @@ namespace Kernel
 				index++;
 			}
 			return _tmpUrl;
+		}
+
+		static public string ReUrlTime(string url){
+			return string.Concat (url, "?time=", System.DateTime.Now.Ticks);
+		}
+
+		static public string ReUrlTime(string url,string fn){
+			url = ReUrlEnd (url);
+			return string.Concat (url,fn,"?time=", System.DateTime.Now.Ticks);
 		}
 
 		static CfgVersion _instance;

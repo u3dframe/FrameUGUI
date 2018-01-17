@@ -68,15 +68,13 @@ namespace Kernel
 		bool m_isRunning = true;
 
 		public DownLoadFile():base(){
-			m_resPackage = "files";
 		}
 
 		public DownLoadFile(string row):base(row){
-			m_resPackage = "files";
 		}
 
-		string _ReUrlPath(string url){
-			return CfgVersion.ReUrlPath (url);
+		string _ReUrlPath(string url,string fn){
+			return CfgVersion.ReUrlTime (url,fn);
 		}
 
 		string _GetUrl(string[] arrs,string defUrl,ref int index){
@@ -112,10 +110,7 @@ namespace Kernel
 					return;
 				}
 
-				string _fmt = "{0}{1}?time={2}";
-				string _url = _ReUrlPath(_GetUrl(_arrsUrls,m_url,ref _indexUrl));
-
-				m_realUrl = string.Format (_fmt,_url,m_filePath,System.DateTime.Now.Ticks);
+				m_realUrl = _ReUrlPath (_GetUrl(_arrsUrls,m_url,ref _indexUrl),m_filePath);
 				m_www = new WWW(m_realUrl);
 
 				m_state = State.DownLoad;
