@@ -320,7 +320,7 @@ namespace Kernel
 			string _tmpUrl = defUrl;
 			if (arrs != null && arrs.Length > 1) {
 				if (index < 0) {
-					index = Random.Range (0, arrs.Length - 1);
+					index = Random.Range (0, arrs.Length);
 				}
 				index %= arrs.Length;
 				_tmpUrl = arrs [index];
