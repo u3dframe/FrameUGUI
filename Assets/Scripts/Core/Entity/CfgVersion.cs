@@ -90,8 +90,8 @@ namespace Kernel
 		}
 
 		// 包头
-		public string m_pkgVersion = "and_cn_cm";
-		public string m_pkgFilelist = "and_cn_cm";
+		public string m_pkgVersion = ""; // 可读在CfgPackage里面m_uprojVer
+		public string m_pkgFilelist = "";
 		public string m_pkgFiles = "files";
 
 		// 服务器列表
@@ -129,7 +129,6 @@ namespace Kernel
 		protected const string m_kUrlSV = "url_sv";
 
 		protected const string m_kCodeFilelist = "code_fl";
-		protected const string m_kPkgVersion = "pkg_ver";
 		protected const string m_kPkgFilelist = "pkg_fl";
 		protected const string m_kPkgFiles = "pkg_fls";
 
@@ -143,7 +142,7 @@ namespace Kernel
 		public string urlPath4FileList{
 			get{
 				string _tmpUrl = GetUrl(_arrsFlts, m_urlFilelist,ref _indFlts);
-				return GetUrlFilelist (_tmpUrl);
+				return ReUrlTime (_tmpUrl,CfgFileList.m_defFileName);
 			}
 		}
 
@@ -336,10 +335,6 @@ namespace Kernel
 			this.m_pkgFiles = other.m_pkgFiles;
 		}
 
-		public string GetUrlFilelist(string url){
-			return ReUrlTime (url,CfgFileList.m_defFileName);
-		}
-
 		static public string ReUrlEnd(string url){
 			int _index = url.LastIndexOf("/");
 			if (_index == url.Length - 1) {
@@ -368,6 +363,14 @@ namespace Kernel
 		static public string ReUrlTime(string url,string fn){
 			url = ReUrlEnd (url);
 			return string.Concat (url,fn,"?time=", System.DateTime.Now.Ticks);
+		}
+
+		static public string ReUrlTime(string url,string proj,string fn){
+			if (!string.IsNullOrEmpty (proj)) {
+				url = ReUrlEnd (url);
+				url = string.Concat (url, proj);
+			}
+			return ReUrlTime (url, fn);
 		}
 
 		static CfgVersion _instance;

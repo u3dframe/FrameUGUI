@@ -55,6 +55,7 @@ namespace Kernel
 		protected List<CompareFiles> m_lComFiles = new List<CompareFiles> ();
 		protected CompareFiles m_last = null,m_curr = null;
 
+		protected string m_wwwUrl = "";
 		protected WWW m_www = null;
 		protected int m_numLimitTry = 3,m_numCountTry = 0;
 
@@ -145,7 +146,8 @@ namespace Kernel
 			}
 
 			if (m_www == null) {
-				m_www = new WWW (m_cfgOld.urlPath4Ver);
+				m_wwwUrl = m_cfgOld.urlPath4Ver;
+				m_www = new WWW (m_wwwUrl);
 			}
 
 			if (m_www.isDone) {
@@ -158,8 +160,8 @@ namespace Kernel
 						m_numCountTry++;
 					} else {
 						m_state = State.Error_DownVer;
-						_LogError (string.Format ("Down Version Error : url = [{0}] , Error = [{1}]", m_cfgOld.urlPath4Ver, m_www.error));
 					}
+					_LogError (string.Format ("Down Version Error : url = [{0}] , Error = [{1}]", m_wwwUrl, m_www.error));
 				}
 				m_www.Dispose ();
 				m_www = null;
@@ -195,7 +197,8 @@ namespace Kernel
 
 		protected virtual void _OnST_DownFileList(){
 			if (m_www == null) {
-				m_www = new WWW (m_cfgNew.urlPath4FileList);
+				m_wwwUrl = m_cfgNew.urlPath4FileList;
+				m_www = new WWW (m_wwwUrl);
 			}
 
 			if (m_www.isDone) {
@@ -226,8 +229,8 @@ namespace Kernel
 						m_numCountTry++;
 					} else {
 						m_state = State.Error_DownFileList;
-						_LogError (string.Format ("Down FileList Error : url = [{0}] , Error = [{1}]", m_cfgNew.urlPath4FileList, m_www.error));
 					}
+					_LogError (string.Format ("Down FileList Error : url = [{0}] , Error = [{1}]", m_wwwUrl, m_www.error));
 				}
 				m_www.Dispose ();
 				m_www = null;

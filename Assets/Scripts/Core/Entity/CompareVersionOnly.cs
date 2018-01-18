@@ -49,7 +49,8 @@ namespace Kernel
 			}
 
 			if (m_www == null) {
-				m_www = new WWW (m_cfgNew.GetUrlFilelist(strUrl));
+				m_wwwUrl = m_cfgNew.urlPath4FileList;
+				m_www = new WWW (m_wwwUrl);
 			}
 
 			if (m_www.isDone) {
@@ -79,8 +80,8 @@ namespace Kernel
 						m_numCountTry++;
 					} else {
 						m_state = State.Error_DownFileList;
-						_LogError (string.Format ("Down FileList Error : url = [{0}] , Error = [{1}]", m_cfgNew.urlPath4FileList, m_www.error));
 					}
+					_LogError (string.Format ("Only Down FileList Error : url = [{0}] , Error = [{1}]", m_wwwUrl, m_www.error));
 				}
 				m_www.Dispose ();
 				m_www = null;
