@@ -17,7 +17,19 @@ namespace Kernel
 		public string m_compareCode = "";
 
 		// 资源的包体(上面的相对路径还在该resPackage下面)
-		public string m_resPackage = "";
+		string _m_resPackage = "";
+		public string m_resPackage{
+			get{ return _m_resPackage; }
+			set{
+				_m_resPackage = value;
+				if (!string.IsNullOrEmpty(_m_resPackage)) {
+					int _ind = _m_resPackage.LastIndexOf ("/");
+					if (_ind == _m_resPackage.Length - 1) {
+						_m_resPackage = _m_resPackage.Substring (0, _ind);
+					}
+				}
+			}
+		}
 
 		// 文件大小
 		public int m_size = 0;
