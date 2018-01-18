@@ -36,7 +36,7 @@ namespace Kernel
 		public string m_urlVersion{
 			get{ return _m_urlVersion; }
 			set{
-				if (value == null) {
+				if (string.IsNullOrEmpty(value)) {
 					_arrsVers = null;
 				} else if (!value.Equals (_m_urlVersion)) {
 					_arrsVers = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);
@@ -53,7 +53,7 @@ namespace Kernel
 		public string m_urlFilelist{
 			get{ return _m_urlFilelist; }
 			set{
-				if (value == null) {
+				if (string.IsNullOrEmpty(value)) {
 					_arrsFlts = null;
 				} else if (!value.Equals (_m_urlFilelist)) {
 					_arrsFlts = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);
@@ -79,7 +79,7 @@ namespace Kernel
 		public string m_urlSv{
 			get{ return _m_urlSv; }
 			set{
-				if (value == null) {
+				if (string.IsNullOrEmpty(value)) {
 					_arrsSvs = null;
 				} else if (!value.Equals (_m_urlSv)) {
 					_arrsSvs = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);

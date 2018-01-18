@@ -46,7 +46,7 @@ namespace Kernel
 		public string m_url{
 			get{ return _m_url; }
 			set{
-				if (value == null) {
+				if (string.IsNullOrEmpty(value)) {
 					_arrsUrls = null;
 				} else if (!value.Equals (_m_url)) {
 					_arrsUrls = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);
@@ -187,7 +187,7 @@ namespace Kernel
 			this.m_state = State.Init;
 		}
 
-		static public DownLoadFile ParseBy(ResInfo info){
+		static public DownLoadFile ParseBy(ResInfo info,string url,string proj){
 			DownLoadFile ret = null;
 
 			if(info != null){
@@ -199,8 +199,14 @@ namespace Kernel
 				}
 
 				ret.ReDown ();
+				ret.m_url = url;
+				ret.m_resPackage = proj;
 			}
 			return ret;
+		}
+
+		static public DownLoadFile ParseBy(ResInfo info){
+			return ParseBy(info,"","");
 		}
 	}
 }

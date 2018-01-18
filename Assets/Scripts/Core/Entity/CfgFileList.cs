@@ -113,8 +113,9 @@ namespace Kernel
 		/// <summary>
 		/// 加载默认的资源
 		/// </summary>
-		public void LoadDefault(){
+		public CfgFileList LoadDefault(){
 			Load (m_defFileName);
+			return this;
 		}
 
 		/// <summary>

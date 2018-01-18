@@ -208,10 +208,9 @@ namespace Kernel
 					}
 					m_curr = new CompareFiles ();
 					if (m_last != null) {
-						// m_curr.Init(m_last.m_newContent,m_www.text, m_cfgNew.m_urlRes);
-						m_curr.Init(m_last.m_cfgOld,m_www.text, m_cfgNew.m_urlRes);
+						m_curr.Init(m_last.m_cfgOld,m_www.text, m_cfgNew.m_urlRes,m_cfgNew.m_pkgFiles);
 					} else {
-						m_curr.Init (m_www.text, m_cfgNew.m_urlRes);
+						m_curr.Init (m_www.text, m_cfgNew.m_urlRes,m_cfgNew.m_pkgFiles);
 					}
 
 					m_lComFiles.Add (m_curr);

@@ -60,9 +60,9 @@ namespace Kernel
 					}
 					m_curr = new CompareFiles ();
 					if (m_last != null) {
-						m_curr.Init(m_last.m_cfgOld,m_www.text,strUrl);
+						m_curr.Init(m_last.m_cfgOld,m_www.text,strUrl,cfgTmp.m_pkgFiles);
 					} else {
-						m_curr.Init (m_www.text,strUrl);
+						m_curr.Init (m_www.text,strUrl,cfgTmp.m_pkgFiles);
 					}
 
 					m_lComFiles.Add (m_curr);

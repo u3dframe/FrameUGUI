@@ -38,6 +38,9 @@ namespace Kernel
 		// 更新地址
 		public string m_newUrl{ get; private set; }
 
+		// file proj (下载地址url + proj + filename)
+		public string m_newProj{ get; private set; }
+
 		public string m_newContent{ get; private set; }
 
 		CfgFileList _m_cfgOld = new CfgFileList (true);
@@ -84,11 +87,16 @@ namespace Kernel
 			m_code = (++_Code);
 		}
 
-		void Clear ()
+		void ClearAll ()
 		{
 			m_cfgOld.Clear ();
 			m_cfgNew.Clear ();
 
+			Clear ();
+		}
+
+		void Clear ()
+		{
 			m_deletes.Clear ();
 			m_updates.Clear ();
 
@@ -100,46 +108,20 @@ namespace Kernel
 			m_lRemoveDownings.Clear ();
 		}
 
-		public void Init (string newFiles, string newUrl)
+		public void Init (string newFiles, string newUrl,string newProj)
 		{
-			m_cfgOld.LoadDefault ();
-
-			Init (m_cfgOld.m_content, newFiles, newUrl);
+			Init (new CfgFileList ().LoadDefault (), newFiles, newUrl,newProj);
 		}
 
-		public void Init (string oldFiles, string newFiles, string newUrl)
-		{
+		public void Init(CfgFileList oldFiles, string newFiles, string newUrl,string newProj){
 			Clear ();
 
 			this.m_newUrl = newUrl;
 			this.m_newContent = newFiles;
-
-			this.m_cfgOld.Init (oldFiles);
-			this.m_cfgNew.Init (newFiles);
-
-			this.DoCompare ();
-		}
-
-		public void Init(CfgFileList oldFiles, string newFiles, string newUrl){
-			Clear ();
-
-			this.m_newUrl = newUrl;
-			this.m_newContent = newFiles;
+			this.m_newProj = newProj;
 
 			this.m_cfgOld.CloneFromOther(oldFiles);
 			this.m_cfgNew.Init (newFiles);
-
-			this.DoCompare ();
-		}
-
-		public void Init(CfgFileList oldFiles, CfgFileList newFiles, string newUrl){
-			Clear ();
-
-			this.m_newUrl = newUrl;
-			this.m_newContent = newFiles.m_content;
-
-			this.m_cfgOld.CloneFromOther(oldFiles);
-			this.m_cfgNew.CloneFromOther (newFiles);
 
 			this.DoCompare ();
 		}
@@ -186,8 +168,7 @@ namespace Kernel
 //				if (!_IsCanDown (m_cfgNew.m_dicFiles [_key]))
 //					continue;
 
-				m_dwf = DownLoadFile.ParseBy (m_cfgNew.m_dicFiles [_key]);
-				m_dwf.m_url = this.m_newUrl;
+				m_dwf = DownLoadFile.ParseBy (m_cfgNew.m_dicFiles [_key],m_newUrl,"files");
 				m_updates.Add (_key, m_dwf);
 			}
 		}
@@ -235,7 +216,7 @@ namespace Kernel
 			}
 
 			m_lKeys.Clear ();
-			min.Clear ();
+			min.ClearAll ();
 		}
 
 		public CompareFiles MergeGetMax (List<CompareFiles> list)
