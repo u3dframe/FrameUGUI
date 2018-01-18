@@ -25,12 +25,16 @@ namespace Kernel
 		// 版本地址
 		public string m_urlVersion = "";
 
+		// url project -> uproj(可为空)
+		public string m_uprojVer = "";
+
 		public string m_content{ get; private set; }
 
 		const string m_kPlatformName = "platform";
 		const string m_kPlatformID = "platformID";
 		const string m_kLanguage = "language";
 		const string m_kUrlVersion = "url_ver";
+		const string m_kUprojVer = "uproj_ver";
 
 		public bool m_isInit{ get; private set; }
 
@@ -60,6 +64,7 @@ namespace Kernel
 			this.m_platformID = _ToStr(_jsonData,m_kPlatformID);
 			this.m_language = _ToStr(_jsonData,m_kLanguage);
 			this.m_urlVersion = _ToStr(_jsonData,m_kUrlVersion);
+			this.m_uprojVer = _ToStr (_jsonData, m_kUprojVer);
 		}
 
 		string _ToStr(JsonData jsonData,string key){
@@ -75,6 +80,7 @@ namespace Kernel
 			this.m_platformID = other.m_platformID;
 			this.m_language = other.m_language;
 			this.m_urlVersion = other.m_urlVersion;
+			this.m_uprojVer = other.m_uprojVer;
 
 			this.m_content = other.m_content;
 			this.m_isInit = other.m_isInit;

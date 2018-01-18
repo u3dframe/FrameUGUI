@@ -92,7 +92,7 @@ namespace Kernel
 		// 包头
 		public string m_pkgVersion = ""; // 可读在CfgPackage里面m_uprojVer
 		public string m_pkgFilelist = "";
-		public string m_pkgFiles = "files";
+		public string m_pkgFiles = "";
 
 		// 服务器列表
 		public string urlSvlist{

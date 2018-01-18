@@ -37,6 +37,10 @@ namespace Kernel
 			if (!string.IsNullOrEmpty (CfgPackage.instance.m_urlVersion)) {
 				this.m_urlVersion = CfgPackage.instance.m_urlVersion;
 			}
+
+			if (!string.IsNullOrEmpty (CfgPackage.instance.m_uprojVer)) {
+				this.m_pkgVersion = CfgPackage.instance.m_uprojVer;
+			}
 		}
 
 		protected override void _OnInit (string content)
@@ -57,16 +61,22 @@ namespace Kernel
 			this.m_bigVerCode = _ToStr(_jsonData,m_kBigVerCode);
 			this.m_urlNewApkIpa = _ToStr(_jsonData,m_kUrlNewApkIpa);
 			this.m_urlSv = _ToStr(_jsonData,m_kUrlSV);
+			this.m_pkgFilelist = _ToStr(_jsonData,m_kPkgFilelist);
+			this.m_pkgFiles = _ToStr(_jsonData,m_kPkgFiles,"files");
 
 			if(_jsonData.Keys.Contains(m_kUrlFls))
 				_ToList (_jsonData[m_kUrlFls]);
 		}
 
-		string _ToStr(JsonData jsonData,string key){
+		string _ToStr(JsonData jsonData,string key,string def = null){
 			if (jsonData != null) {
 				if (jsonData.Keys.Contains (key))
 					return jsonData [key].ToString ();
 			}
+
+			if (def != null)
+				return def;
+			
 			return "";
 		}
 
