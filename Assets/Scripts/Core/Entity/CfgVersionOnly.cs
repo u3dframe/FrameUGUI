@@ -139,6 +139,8 @@ namespace Kernel
 			_jsonData[m_kUrlNewApkIpa] = this.m_urlNewApkIpa;
 			_jsonData[m_kUrlFilelist] = this.m_urlFilelist;
 			_jsonData[m_kUrlSV] = this.m_urlSv;
+			_jsonData[m_kPkgFilelist] = this.m_pkgFilelist;
+			_jsonData[m_kPkgFiles] = this.m_pkgFiles;
 
 			if (this.m_isCanWriteUrlFls) {
 				if (!this.m_lUrlFls.Contains (this.m_urlFilelist)) {

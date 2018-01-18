@@ -135,14 +135,14 @@ namespace Kernel
 		public string urlPath4Ver{
 			get{
 				string _tmpUrl = GetUrl(_arrsVers, m_urlVersion,ref _indVers);
-				return ReUrlTime(_tmpUrl, m_defFileName);
+				return ReUrlTime(_tmpUrl,m_pkgVersion, m_defFileName);
 			}
 		}
 
 		public string urlPath4FileList{
 			get{
 				string _tmpUrl = GetUrl(_arrsFlts, m_urlFilelist,ref _indFlts);
-				return ReUrlTime (_tmpUrl,CfgFileList.m_defFileName);
+				return ReUrlTime (_tmpUrl,m_pkgFilelist, CfgFileList.m_defFileName);
 			}
 		}
 
