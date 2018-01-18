@@ -140,6 +140,8 @@ namespace Kernel.Core{
 						}
 					}
 				}
+				mgrCfg.m_codeFilelist = ALG.CRC32Class.GetCRC32(_fp);
+				mgrCfg.SaveDefault();
 			} catch{
 			}
 		}

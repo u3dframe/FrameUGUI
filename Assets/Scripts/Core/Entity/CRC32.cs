@@ -88,6 +88,10 @@ namespace Kernel.ALG
 			return GetCRC32 (buf, buf.Length);
 		}
 
+		static public string GetCRC32(string filePath){
+			return GetCRC32 (File.OpenRead(filePath));
+		}
+
 		static public string GetCRC32(FileStream stream){
 			using (stream) {
 				byte[] buffer = new byte[stream.Length];

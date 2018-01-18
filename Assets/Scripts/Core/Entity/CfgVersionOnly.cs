@@ -63,6 +63,7 @@ namespace Kernel
 			this.m_urlSv = _ToStr(_jsonData,m_kUrlSV);
 			this.m_pkgFilelist = _ToStr(_jsonData,m_kPkgFilelist);
 			this.m_pkgFiles = _ToStr(_jsonData,m_kPkgFiles,"files");
+			this.m_codeFilelist = _ToStr(_jsonData,m_kCodeFilelist);
 
 			if(_jsonData.Keys.Contains(m_kUrlFls))
 				_ToList (_jsonData[m_kUrlFls]);
@@ -141,6 +142,7 @@ namespace Kernel
 			_jsonData[m_kUrlSV] = this.m_urlSv;
 			_jsonData[m_kPkgFilelist] = this.m_pkgFilelist;
 			_jsonData[m_kPkgFiles] = this.m_pkgFiles;
+			_jsonData[m_kCodeFilelist] = this.m_codeFilelist;
 
 			if (this.m_isCanWriteUrlFls) {
 				if (!this.m_lUrlFls.Contains (this.m_urlFilelist)) {
