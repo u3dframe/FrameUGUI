@@ -15,7 +15,13 @@ namespace Kernel.Core{
 	/// 最后Zip或者所以文件拷贝到Assets下面流文件
 	/// </summary>
 	public static class EL_Patcher {
-		
+
+		static Kernel.CfgVersionOnly mgrCfg{
+			get{
+				return Kernel.CfgVersionOnly.instance;
+			}
+		}
+
 		static public bool m_isBuilded{ get; private set;}
 		static List<ResInfo> m_list = new List<ResInfo>();
 
@@ -204,7 +210,7 @@ namespace Kernel.Core{
 			foreach (var item in ups.Values) {
 				m_list.Add (item);
 			}
-			_ZipFiles (m_list,false);
+			_ZipFiles (m_list,false,mgrCfg.m_pkgFiles);
 
 			_CopyFilelistToRes ();
 			EditorUtility.ClearProgressBar ();
