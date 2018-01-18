@@ -65,6 +65,7 @@ public class EDW_Patcher : EditorWindow
 	bool m_isSaveVer = false;
 	bool m_isNewDown = false;
 	string m_descPkg = "";
+	GUIStyle m_descStyle = new GUIStyle();
     #endregion
 
     #region  == EditorWindow Func ===
@@ -100,6 +101,8 @@ public class EDW_Patcher : EditorWindow
 		m_descPkg = "所有下载地址 realurl = url + pkg + filename,\n"+
 			"比如:version真正的下载地址 = url_ver + pkg_ver + vestion.txt,\n"+
 			"如果pkg_ver为空, = url_ver + vestion.txt";
+
+		m_descStyle.normal.textColor = Color.yellow;
     }
 
     void OnUpdate()
@@ -131,7 +134,7 @@ public class EDW_Patcher : EditorWindow
 	#endregion
 
 	void _Draw(){
-		Init ();
+		// Init ();
 
 		Rect _pos = this.position;
 		int curX = 10;
@@ -194,7 +197,8 @@ public class EDW_Patcher : EditorWindow
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "url_ver:");
 //		m_cfgVer.m_urlVersion = EditorGUI.TextField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlVersion);
-		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 90), m_cfgVer.m_urlVersion);
+		EditorGUI.LabelField (CreateRect (ref curX, curY, 260), m_cfgVer.m_urlVersion);
+		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 350), "(修改在Plugin/Android/assets/cfg_z1.json里的url_ver的值)",m_descStyle);
 
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "url_filelist:");
@@ -211,17 +215,17 @@ public class EDW_Patcher : EditorWindow
 		NextLine (ref curX, ref curY, 55);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "pkg_ver:");
 		m_cfgVer.m_pkgVersion = EditorGUI.TextField (CreateRect (ref curX, curY, 180), m_cfgVer.m_pkgVersion);
-		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 270), "打包时使用,apk是CfgPackage里面值,修改在Plugin/Android/assets/cfg_z1.json里的uproj_ver的值");
+		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 270), "打包时使用,apk是CfgPackage里面值,修改在Plugin/Android/assets/cfg_z1.json里的uproj_ver的值",m_descStyle);
 
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "pkg_fl:");
 		m_cfgVer.m_pkgFilelist = EditorGUI.TextField (CreateRect (ref curX, curY, 180), m_cfgVer.m_pkgFilelist);
-		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 270), "filelist的package(补丁zip和下载时候用)");
+		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 270), "filelist的package(补丁zip和下载时候用)",m_descStyle);
 
 		NextLine (ref curX, ref curY, 30);
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "pkg_fls:");
 		m_cfgVer.m_pkgFiles = EditorGUI.TextField (CreateRect (ref curX, curY, 180), m_cfgVer.m_pkgFiles);
-		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 270), "资源文件files的package(补丁zip和下载时候用)");
+		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 270), "资源文件files的package(补丁zip和下载时候用)",m_descStyle);
 
 		NextLine (ref curX, ref curY, 30);
 
