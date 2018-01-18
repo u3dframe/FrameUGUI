@@ -38,7 +38,7 @@ namespace Kernel
 		// 更新地址
 		public string m_newUrl{ get; private set; }
 
-		// file proj (下载地址url + proj + filename)
+		// file proj (下载地址url + proj + filename,proj可以为空,为空时 = url + filename)
 		public string m_newProj{ get; private set; }
 
 		public string m_newContent{ get; private set; }
