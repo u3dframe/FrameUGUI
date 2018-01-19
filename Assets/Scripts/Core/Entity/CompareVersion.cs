@@ -202,34 +202,45 @@ namespace Kernel
 			}
 
 			if (m_www.isDone) {
-				if (string.IsNullOrEmpty (m_www.error)) { 
-					if (m_lComFiles.Count > 0) {
-						m_last = m_lComFiles [m_lComFiles.Count - 1];
-					}
-					m_curr = new CompareFiles ();
-					if (m_last != null) {
-						m_curr.Init(m_last.m_cfgOld,m_www.text, m_cfgNew.m_urlRes,m_cfgNew.m_pkgFiles);
-					} else {
-						m_curr.Init (m_www.text, m_cfgNew.m_urlRes,m_cfgNew.m_pkgFiles);
+				bool _isSuccess = string.IsNullOrEmpty (m_www.error);
+				if (_isSuccess) {
+					bool _isOkey = string.IsNullOrEmpty (m_cfgNew.m_codeFilelist);
+					if (!_isOkey) {
+						string _code = ALG.CRC32Class.GetCRC32 (m_www.bytes);
+						_isOkey = m_cfgNew.m_codeFilelist.Equals (_code);
 					}
 
-					m_lComFiles.Add (m_curr);
+					if (_isOkey) {
+						if (m_lComFiles.Count > 0) {
+							m_last = m_lComFiles [m_lComFiles.Count - 1];
+						}
+						m_curr = new CompareFiles ();
+						if (m_last != null) {
+							m_curr.Init (m_last.m_cfgOld, m_www.text, m_cfgNew.m_urlRes, m_cfgNew.m_pkgFiles);
+						} else {
+							m_curr.Init (m_www.text, m_cfgNew.m_urlRes, m_cfgNew.m_pkgFiles);
+						}
 
-					m_last = null;
-					m_curr = null;
+						m_lComFiles.Add (m_curr);
 
-					m_cfgOld.CloneFromOther (m_cfgNew);
+						m_last = null;
+						m_curr = null;
 
-					// 再次进行数据下载
-					m_state = State.DownVersion;
-					m_numCountTry = 0;
+						m_cfgOld.CloneFromOther (m_cfgNew);
+
+						// 再次进行数据下载
+						m_state = State.DownVersion;
+						m_numCountTry = 0;
+					}
 				} else {
-					if (m_numLimitTry > m_numCountTry) {
-						m_numCountTry++;
-					} else {
-						m_state = State.Error_DownFileList;
-					}
 					_LogError (string.Format ("Down FileList Error : url = [{0}] , Error = [{1}]", m_wwwUrl, m_www.error));
+				}
+				if (m_numLimitTry > m_numCountTry) {
+					m_numCountTry++;
+				} else {
+					m_state = State.Error_DownFileList;
+					if(_isSuccess)
+						_LogError (string.Format ("Down FileList Error : url = [{0}] , Error = [CRC cannot match]", m_wwwUrl));
 				}
 				m_www.Dispose ();
 				m_www = null;

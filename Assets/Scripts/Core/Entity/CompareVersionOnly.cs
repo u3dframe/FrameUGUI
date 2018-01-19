@@ -49,39 +49,50 @@ namespace Kernel
 			}
 
 			if (m_www == null) {
-				m_wwwUrl = m_cfgNew.urlPath4FileList;
+				m_wwwUrl = cfgTmp.urlPath4FileList;
 				m_www = new WWW (m_wwwUrl);
 			}
 
 			if (m_www.isDone) {
-				if (string.IsNullOrEmpty (m_www.error)) { 
-					if (m_lComFiles.Count > 0) {
-						m_last = m_lComFiles [m_lComFiles.Count - 1];
-					}
-					m_curr = new CompareFiles ();
-					if (m_last != null) {
-						m_curr.Init(m_last.m_cfgOld,m_www.text,strUrl,cfgTmp.m_pkgFiles);
-					} else {
-						m_curr.Init (m_www.text,strUrl,cfgTmp.m_pkgFiles);
+				bool _isSuccess = string.IsNullOrEmpty (m_www.error);
+				if (_isSuccess) {
+					bool _isOkey = string.IsNullOrEmpty (cfgTmp.m_codeFilelist);
+					if (!_isOkey) {
+						string _code = ALG.CRC32Class.GetCRC32 (m_www.bytes);
+						_isOkey = cfgTmp.m_codeFilelist.Equals (_code);
 					}
 
-					m_lComFiles.Add (m_curr);
+					if (_isOkey) {
+						if (m_lComFiles.Count > 0) {
+							m_last = m_lComFiles [m_lComFiles.Count - 1];
+						}
+						m_curr = new CompareFiles ();
+						if (m_last != null) {
+							m_curr.Init (m_last.m_cfgOld, m_www.text, strUrl, cfgTmp.m_pkgFiles);
+						} else {
+							m_curr.Init (m_www.text, strUrl, cfgTmp.m_pkgFiles);
+						}
 
-					m_last = null;
-					m_curr = null;
-					if (cfgTmp.m_isCanWriteUrlFls) {
-						m_cfgOld.CloneFromOther (m_cfgNew);
-					} else {
-						m_state = State.CompareFileList;
+						m_lComFiles.Add (m_curr);
+
+						m_last = null;
+						m_curr = null;
+						if (cfgTmp.m_isCanWriteUrlFls) {
+							m_cfgOld.CloneFromOther (cfgTmp);
+						} else {
+							m_state = State.CompareFileList;
+						}
+						m_numCountTry = 0;
 					}
-					m_numCountTry = 0;
 				} else {
-					if (m_numLimitTry > m_numCountTry) {
-						m_numCountTry++;
-					} else {
-						m_state = State.Error_DownFileList;
-					}
 					_LogError (string.Format ("Only Down FileList Error : url = [{0}] , Error = [{1}]", m_wwwUrl, m_www.error));
+				}
+				if (m_numLimitTry > m_numCountTry) {
+					m_numCountTry++;
+				} else {
+					m_state = State.Error_DownFileList;
+					if(_isSuccess)
+						_LogError (string.Format ("Down FileList Error : url = [{0}] , Error = [CRC cannot match]", m_wwwUrl));
 				}
 				m_www.Dispose ();
 				m_www = null;
