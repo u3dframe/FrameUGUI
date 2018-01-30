@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.EventSystems;
-
+/// <summary>
+/// 类名 : UGUI EventSystem 单例对象
+/// 作者 : Canyon / 龚阳辉
+/// 日期 : 2017-12-14 16:10
+/// 功能 : EventSystem 只能存在一个
+/// </summary>
 [RequireComponent(typeof(EventSystem),typeof(StandaloneInputModule))]
 public class UGUIEventSystem : MonoBehaviour {
 

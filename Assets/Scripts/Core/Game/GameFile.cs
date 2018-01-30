@@ -123,6 +123,31 @@ namespace Kernel
 			return null;
 		}
 
+		static public string ReUrlEnd(string url){
+			int _index = url.LastIndexOf("/");
+			if (_index == url.Length - 1) {
+				return url;
+			}
+			return string.Concat (url, "/");
+		}
+
+		static public string ReUrlTime(string url){
+			return string.Concat (url, "?time=", System.DateTime.Now.Ticks);
+		}
+
+		static public string ReUrlTime(string url,string fn){
+			url = ReUrlEnd (url);
+			return string.Concat (url,fn,"?time=", System.DateTime.Now.Ticks);
+		}
+
+		static public string ReUrlTime(string url,string proj,string fn){
+			if (!string.IsNullOrEmpty (proj)) {
+				url = ReUrlEnd (url);
+				url = string.Concat (url, proj);
+			}
+			return ReUrlTime (url, fn);
+		}
+
 		static public AssetBundleManifest GetAssetManifest(){
 			byte[] _bts = GetFileBytes (m_curPlatform);
 			AssetBundleManifest ret = null;

@@ -17,7 +17,7 @@ public class EDW_Patcher : EditorWindow
 
     // 窗体宽高
 	static public float width = 550;
-    static public float height = 380;
+    static public float height = 410;
 
 	[MenuItem("Tools/Patcher",false,10)]
     static void AddWindow()
@@ -66,6 +66,10 @@ public class EDW_Patcher : EditorWindow
 	bool m_isNewDown = false;
 	string m_descPkg = "";
 	GUIStyle m_descStyle = new GUIStyle();
+
+	const long m_1mb = 1024 * 1024;
+	static int m_curMb = 40;
+	static public long m_limitZipSize = m_1mb * m_curMb;
     #endregion
 
     #region  == EditorWindow Func ===
@@ -226,6 +230,15 @@ public class EDW_Patcher : EditorWindow
 		GUI.Label (CreateRect (ref curX, curY,80, 25), "pkg_fls:");
 		m_cfgVer.m_pkgFiles = EditorGUI.TextField (CreateRect (ref curX, curY, 180), m_cfgVer.m_pkgFiles);
 		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 270), "资源文件files的package(补丁zip和下载时候用)",m_descStyle);
+
+		NextLine (ref curX, ref curY, 30);
+		GUI.Label (CreateRect (ref curX, curY,80, 25), "Zip文件大小:");
+		m_curMb = EditorGUI.IntField (CreateRect (ref curX, curY, 120), m_curMb);
+		EditorGUI.LabelField (CreateRect (ref curX, curY, 20), "MB");
+		EditorGUI.LabelField (CreateRect (ref curX, curY, _width - 270), "Zip全部时,每个文件大小限定",m_descStyle);
+		if (m_curMb <= 15)
+			m_curMb = 15;
+		m_limitZipSize = m_1mb * m_curMb;
 
 		NextLine (ref curX, ref curY, 30);
 
