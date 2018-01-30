@@ -43,6 +43,12 @@ namespace Kernel
 		static public readonly string m_fpZipCachePatch = string.Format ("{0}res_patch.zip", m_dirResCache);
 		static public readonly string m_fpZip = string.Format ("{0}resource.zip", m_dirStreaming);
 
+		// zip 压缩文件列表(将文件分包体大小来压缩,减小解压时所需内存)
+		static public readonly string m_fpZipListCache = string.Concat (m_dirResCache,"ziplist.txt");
+		static public readonly string m_fpZipList = string.Concat (m_dirStreaming,"ziplist.txt");
+		static public readonly string m_fmtZipCache = string.Concat (m_dirResCache,"_zips/resource{0}.zip");
+		static public readonly string m_fmtZip = string.Concat (m_dirStreaming,"resource{0}.zip");
+
 		// 统一分割符号
 		static public string ReDirSeparator(string fp){
 			return fp.Replace ('\\', '/');

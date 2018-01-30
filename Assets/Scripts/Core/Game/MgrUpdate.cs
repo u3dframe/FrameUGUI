@@ -80,6 +80,8 @@ class MgrUpdate : MonoBehaviour {
 			m_currTime -= m_limitUpTime;
 		}
 
+		_OnGC ();
+
 		switch (m_state) {
 		case State.Init:
 			_ST_Init ();
@@ -258,6 +260,7 @@ class MgrUpdate : MonoBehaviour {
 	void _ST_Completed(){
 		m_isRunning = false;
 		// 进入游戏
+		_OnGC(true);
 		// Kernel.CfgVersionOnly.instance.LoadDefault();
 	}
 
@@ -274,6 +277,16 @@ class MgrUpdate : MonoBehaviour {
 	void _ReState(State currState){
 		m_state = currState;
 		m_preState = State.None;
+	}
+
+	void _OnGC(bool isIMM = false){
+		if (!isIMM) {
+			isIMM = Time.frameCount % 100 == 0;
+		}
+
+		if (isIMM) {
+			System.GC.Collect ();
+		}
 	}
 
 	void OnUpdateUI(){
