@@ -55,9 +55,7 @@ namespace Kernel
 		protected List<CompareFiles> m_lComFiles = new List<CompareFiles> ();
 		protected CompareFiles m_last = null,m_curr = null;
 
-		protected string m_wwwUrl = "";
-		protected WWW m_www = null;
-		protected int m_numLimitTry = 3,m_numCountTry = 0;
+		protected DownLoadFile m_downfile = null;
 
 		long m_nSizeAll = 0;
 		long m_nSizeCurr = 0;
@@ -145,26 +143,22 @@ namespace Kernel
 				return;
 			}
 
-			if (m_www == null) {
-				m_wwwUrl = m_cfgOld.urlPath4Ver;
-				m_www = new WWW (m_wwwUrl);
+			if (m_downfile == null) {
+				m_downfile = new DownLoadFile ();
+				m_downfile.m_isPrintError = true;
+				m_downfile.ReInit (m_cfgOld.m_urlVersion, CfgVersion.m_defFileName, (obj) => {
+					m_state = State.CheckVersion;
+					m_cfgNew.Init (obj.ToString ());
+				}).ReDown ();
 			}
 
-			if (m_www.isDone) {
-				if (string.IsNullOrEmpty (m_www.error)) { 
-					m_state = State.CheckVersion;
-					m_cfgNew.Init (m_www.text);
-					m_numCountTry = 0;
-				} else {
-					if (m_numLimitTry > m_numCountTry) {
-						m_numCountTry++;
-					} else {
-						m_state = State.Error_DownVer;
-					}
-					_LogError (string.Format ("Down Version Error : url = [{0}] , Error = [{1}]", m_wwwUrl, m_www.error));
-				}
-				m_www.Dispose ();
-				m_www = null;
+			m_downfile.OnUpdate ();
+
+			if (m_downfile.isError) {
+				_DisposeDown ();
+				m_state = State.Error_DownVer;
+			} else if (m_downfile.isFinished) {
+				_DisposeDown ();
 			}
 		}
 
@@ -196,55 +190,49 @@ namespace Kernel
 		}
 
 		protected virtual void _OnST_DownFileList(){
-			if (m_www == null) {
-				m_wwwUrl = m_cfgNew.urlPath4FileList;
-				m_www = new WWW (m_wwwUrl);
-			}
+			_Hd_ST_DownFileList (m_cfgNew.m_urlFilelist,m_cfgNew);
+		}
 
-			if (m_www.isDone) {
-				bool _isSuccess = string.IsNullOrEmpty (m_www.error);
-				if (_isSuccess) {
-					bool _isOkey = string.IsNullOrEmpty (m_cfgNew.m_codeFilelist);
-					if (!_isOkey) {
-						string _code = ALG.CRC32Class.GetCRC32 (m_www.bytes);
-						_isOkey = m_cfgNew.m_codeFilelist.Equals (_code);
+		protected void _Hd_ST_DownFileList(string strUrl,CfgVersion cfg){
+			if (m_downfile == null) {
+				m_downfile = new DownLoadFile ();
+				m_downfile.m_isPrintError = true;
+				m_downfile.m_compareCode = cfg.m_codeFilelist;
+				m_downfile.ReInit (strUrl,cfg.m_pkgFilelist,CfgFileList.m_defFileName, (obj) => {
+					string _val = obj.ToString();
+					if (m_lComFiles.Count > 0) {
+						m_last = m_lComFiles [m_lComFiles.Count - 1];
+					}
+					m_curr = new CompareFiles ();
+					if (m_last != null) {
+						m_curr.Init (m_last.m_cfgOld, _val, strUrl,cfg.m_pkgFiles);
+					} else {
+						m_curr.Init (_val, strUrl,cfg.m_pkgFiles);
 					}
 
-					if (_isOkey) {
-						if (m_lComFiles.Count > 0) {
-							m_last = m_lComFiles [m_lComFiles.Count - 1];
-						}
-						m_curr = new CompareFiles ();
-						if (m_last != null) {
-							m_curr.Init (m_last.m_cfgOld, m_www.text, m_cfgNew.m_urlRes, m_cfgNew.m_pkgFiles);
-						} else {
-							m_curr.Init (m_www.text, m_cfgNew.m_urlRes, m_cfgNew.m_pkgFiles);
-						}
+					m_lComFiles.Add (m_curr);
 
-						m_lComFiles.Add (m_curr);
-
-						m_last = null;
-						m_curr = null;
-
-						m_cfgOld.CloneFromOther (m_cfgNew);
-
-						// 再次进行数据下载
-						m_state = State.DownVersion;
-						m_numCountTry = 0;
-					}
-				} else {
-					_LogError (string.Format ("Down FileList Error : url = [{0}] , Error = [{1}]", m_wwwUrl, m_www.error));
-				}
-				if (m_numLimitTry > m_numCountTry) {
-					m_numCountTry++;
-				} else {
-					m_state = State.Error_DownFileList;
-					if(_isSuccess)
-						_LogError (string.Format ("Down FileList Error : url = [{0}] , Error = [CRC cannot match]", m_wwwUrl));
-				}
-				m_www.Dispose ();
-				m_www = null;
+					m_last = null;
+					m_curr = null;
+					_Hd_ST_DownFileList_End();
+				}).ReDown();
 			}
+
+			m_downfile.OnUpdate ();
+
+			if (m_downfile.isError) {
+				_DisposeDown ();
+				m_state = State.Error_DownFileList;
+			} else if (m_downfile.isFinished) {
+				_DisposeDown ();
+			}
+		}
+
+		protected virtual void _Hd_ST_DownFileList_End(){
+			m_cfgOld.CloneFromOther (m_cfgNew);
+
+			// 再次进行数据下载
+			m_state = State.DownVersion;
 		}
 
 		void _ST_CompareFileList(){
@@ -366,6 +354,13 @@ namespace Kernel
 			}
 		}
 
+		protected void _DisposeDown(){
+			if (m_downfile != null) {
+				m_downfile.Dispose ();
+				m_downfile = null;
+			}
+		}
+
 		public void Save(){
 			this.m_cfgNew.SaveDefault ();
 		}
@@ -390,7 +385,7 @@ namespace Kernel
 			m_callUpdate = null;
 			m_callDownfile = null;
 
-			m_numCountTry = 0;
+			_DisposeDown ();
 
 			this._OnClear ();
 		}

@@ -30,38 +30,10 @@ namespace Kernel
 		public string m_svnVerCode = "";
 
 		// 版本地址(支持多地址,下载同文件模式(避免地址被攻击)
-		private string _m_urlVersion = "";
-		private string[] _arrsVers = null;
-		private int _indVers = 0;
-		public string m_urlVersion{
-			get{ return _m_urlVersion; }
-			set{
-				if (string.IsNullOrEmpty(value)) {
-					_arrsVers = null;
-				} else if (!value.Equals (_m_urlVersion)) {
-					_arrsVers = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);
-					_indVers = 0;
-				}
-				_m_urlVersion = value;
-			}
-		}
+		public string m_urlVersion = "";
 
 		// 文件列表地址
-		private string _m_urlFilelist = "";
-		private string[] _arrsFlts = null;
-		private int _indFlts = -1;
-		public string m_urlFilelist{
-			get{ return _m_urlFilelist; }
-			set{
-				if (string.IsNullOrEmpty(value)) {
-					_arrsFlts = null;
-				} else if (!value.Equals (_m_urlFilelist)) {
-					_arrsFlts = value.Split (";".ToCharArray(),System.StringSplitOptions.RemoveEmptyEntries);
-					_indFlts = -1;
-				}
-				_m_urlFilelist = value;
-			}
-		}
+		public string m_urlFilelist = "";
 
 		// file list 文件的标识值
 		public string m_codeFilelist = "";
@@ -131,20 +103,6 @@ namespace Kernel
 		protected const string m_kCodeFilelist = "code_fl";
 		protected const string m_kPkgFilelist = "pkg_fl";
 		protected const string m_kPkgFiles = "pkg_fls";
-
-		public string urlPath4Ver{
-			get{
-				string _tmpUrl = GetUrl(_arrsVers, m_urlVersion,ref _indVers);
-				return ReUrlTime(_tmpUrl,m_pkgVersion, m_defFileName);
-			}
-		}
-
-		public string urlPath4FileList{
-			get{
-				string _tmpUrl = GetUrl(_arrsFlts, m_urlFilelist,ref _indFlts);
-				return ReUrlTime (_tmpUrl,m_pkgFilelist, CfgFileList.m_defFileName);
-			}
-		}
 
 		public CfgVersion(){
 			this.RefreshResVerCode ();
