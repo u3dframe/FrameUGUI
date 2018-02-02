@@ -49,6 +49,20 @@ namespace Kernel
 		static public readonly string m_fmtZipCache = string.Concat (m_dirResCache,"_zips/resource{0}.zip");
 		static public readonly string m_fmtZip = string.Concat (m_dirStreaming,"resource{0}.zip");
 
+		// 编辑模式
+		static public bool isEditor{
+			get{
+				#if UNITY_EDITOR
+				return true;
+				#else
+				return false;
+				#endif
+			}
+		}
+
+		// 是否使用sdk的登录方式
+		static public bool isLoginUseSdk { get; set;}
+
 		// 统一分割符号
 		static public string ReDirSeparator(string fp){
 			return fp.Replace ('\\', '/');
