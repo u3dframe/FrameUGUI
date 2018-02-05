@@ -261,6 +261,10 @@ class MgrUpdate : MonoBehaviour {
 		m_isRunning = false;
 		// 进入游戏
 		_OnGC(true);
+		GameObject gobj = new GameObject ("GameMain");
+		#if UNITY_EDITOR
+		gobj.AddComponent<MgrRecordMainRes>();
+		#endif
 		// Kernel.CfgVersionOnly.instance.LoadDefault();
 	}
 

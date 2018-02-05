@@ -49,6 +49,9 @@ namespace Kernel
 		static public readonly string m_fmtZipCache = string.Concat (m_dirResCache,"_zips/resource{0}.zip");
 		static public readonly string m_fmtZip = string.Concat (m_dirStreaming,"resource{0}.zip");
 
+		// 大小包(主子包) - 主包资源记录(ab资源) 用于打包
+		static public readonly string m_fpMainRecordRes = string.Concat (Application.dataPath,"_mainRes.info");
+
 		// 编辑模式
 		static public bool isEditor{
 			get{
@@ -101,10 +104,14 @@ namespace Kernel
 			return GetStreamingFilePath (fn);
 		}
 
-		static public void DeleteFile(string fn){
-			string _fp = GetFilePath (fn);
+		static public void DeleteFile(string fn,bool isFilePath){
+			string _fp = isFilePath ? fn : GetFilePath (fn);
 			if (File.Exists (_fp))
 				File.Delete (_fp);
+		}
+
+		static public void DeleteFile(string fn){
+			DeleteFile (fn, false);
 		}
 
 		// 取得文本内容

@@ -13,6 +13,7 @@ namespace Kernel.Core{
 	/// 日期 : 2017-12-13 11:40
 	/// 功能 : 将所有资源拷贝到cache目录，然后生成filelist,如果要zip压缩就进行压缩,
 	/// 最后Zip或者所以文件拷贝到Assets下面流文件
+	/// 暂时没有处理Zip压缩哪块,zip压缩,生成包体的时候,由一个zip文件大小的控制
 	/// </summary>
 	public static class EL_Patcher {
 
@@ -24,6 +25,9 @@ namespace Kernel.Core{
 
 		static public bool m_isBuilded{ get; private set;}
 		static List<ResInfo> m_list = new List<ResInfo>();
+		static List<string> m_lstZips = new List<string>();
+		// 是否按照主子包(大小包)方式打包资源
+		static bool m_isMainRes = false;
 
 		static string[] m_ignoreFiles = {
 			"version.txt",
@@ -148,8 +152,46 @@ namespace Kernel.Core{
 
 		static void _ZipFiles(List<ResInfo> list,bool isAll,string packageZip = ""){
 			string _destFile = isAll ? GameFile.m_fpZipCache : GameFile.m_fpZipCachePatch;
-			GameFile.DeleteFile (_destFile);
+			GameFile.DeleteFile (_destFile,true);
 			GameFile.CreateFolder (_destFile);
+			// 处理Zip的到Queue,和记录Ziplist;
+			_WriteZipListTxt(string.Join(",",m_lstZips.ToArray()));
+		}
+
+//		static void _ExcuteZips(Queue<ZipClass> list){
+//			ZipClass zip = null;
+//			while (list.Count > 0) {
+//				if (zip == null) {
+//					zip = list.Peek ();
+//					if(_ZipOne(ref zip)){
+//						zip = null;
+//						list.Dequeue ();
+//					}
+//				}
+//			}
+//		}
+//
+//		static bool _ZipOne(ref ZipClass zip){
+//			// 过程
+//			float cur = 0;
+//			long max = 1;
+//			float progress = cur / max;
+//			EditorUtility.DisplayProgressBar (string.Format ("正在压缩资源{0}/{1}", cur, max), "filename", progress);
+//			return true;
+//		}
+
+		static void _WriteZipListTxt(string content){
+			try {
+				string _destFile = GameFile.m_fpZipListCache;
+				GameFile.DeleteFile(_destFile,true);
+				GameFile.CreateFolder(_destFile);
+				using(FileStream stream = new FileStream(_destFile,FileMode.OpenOrCreate)){
+					using(StreamWriter writer = new StreamWriter(stream)){
+						writer.Write(content);
+					}
+				}
+			} catch {
+			}
 		}
 
 		static void _ToSteamingAssets(bool isZip){
@@ -159,6 +201,9 @@ namespace Kernel.Core{
 			if (isZip) {
 				if (File.Exists (GameFile.m_fpZipCache))
 					File.Copy (GameFile.m_fpZipCache, GameFile.m_fpZip, true);
+
+				// 拷贝zip列表资源
+				// 拷贝update,更新所需资源
 				return;
 			}
 
@@ -192,8 +237,9 @@ namespace Kernel.Core{
 			EditorUtility.ClearProgressBar ();
 		}
 
-		static public void BuildAll(bool isZip){
+		static public void BuildAll(bool isZip,bool isMainRes = false){
 			_Build (isZip, true);
+			BuildPatch ();
 		}
 
 		static public void BuildPatch(){

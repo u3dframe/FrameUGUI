@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using System.IO;
 
 /// <summary>
 /// 类名 : 生成资源文件放到流文件夹下面
@@ -258,6 +259,10 @@ public class EDW_Patcher : EditorWindow
 			_ZipAllAssets ();
 		}
 
+		if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Zip(主-子)")) {
+			_ZipMainOtherAssets ();
+		}
+
 		if (GUI.Button (CreateRect (ref curX, botY, 100,30), "Build(全部)")) {
 			_BuildAllAssets ();
 		}
@@ -289,6 +294,14 @@ public class EDW_Patcher : EditorWindow
 
 	void _BuildAllAssets(){
 		Kernel.Core.EL_Patcher.BuildAll (false);
+	}
+
+	void _ZipMainOtherAssets(){
+		if (!File.Exists (Kernel.GameFile.m_fpMainRecordRes)) {
+			EditorUtility.DisplayDialog ("Tip", "还未记录主包资源!!!", "Okey");
+			return;
+		}
+		Kernel.Core.EL_Patcher.BuildAll (true);
 	}
 
 	void _ZipPatche(){
