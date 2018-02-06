@@ -96,8 +96,8 @@ namespace Kernel
 				_m_dicFiles.Remove (info.m_resName);
 				string _str = info.ToString ();
 				string _tmp = string.Concat(_str,"\r\n");
-				m_content.Replace (_tmp, "");
-				m_content.Replace (_str, "");
+				m_content = m_content.Replace (_tmp, "");
+				m_content = m_content.Replace (_str, "");
 			}
 		}
 
