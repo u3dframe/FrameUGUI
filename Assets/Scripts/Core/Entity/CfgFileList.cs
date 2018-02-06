@@ -15,15 +15,16 @@ namespace Kernel
 
 		static public readonly string m_defFileName = "filelist.txt";
 
+		// 除去主包资源后剩下的资源列表(子资源列表)
+		static public readonly string m_defFileName2 = "filelist2.txt";
+
 		Dictionary<string,ResInfo> _m_dicFiles = new Dictionary<string, ResInfo> ();
 
-		List<ResInfo> m_lFiles = new List<ResInfo> ();
+		List<ResInfo> _m_lFiles = new List<ResInfo> ();
 
-		public Dictionary<string,ResInfo> m_dicFiles {
-			get{
-				return _m_dicFiles;
-			}
-		}
+		public Dictionary<string,ResInfo> m_dicFiles { get { return _m_dicFiles; } }
+
+		public List<ResInfo> m_lFiles { get { return _m_lFiles; } }
 
 		// 文件路径
 		string m_filePath = "";
@@ -82,6 +83,25 @@ namespace Kernel
 				_m_dicFiles.Add (info.m_resName, info);
 				m_lFiles.Add (info);
 			}
+		}
+
+		public void Remove(ResInfo info){
+			if (info == null)
+				return;
+			
+			if (_m_dicFiles.ContainsKey (info.m_resName)) {
+				info = _m_dicFiles [info.m_resName];
+
+				m_lFiles.Remove (info);
+				_m_dicFiles.Remove (info.m_resName);
+				string _str = info.ToString ();
+				string _tmp = string.Concat(_str,"\r\n");
+				m_content.Replace (_tmp, "");
+				m_content.Replace (_str, "");
+			}
+		}
+
+		public void Remove(string resName){
 		}
 
 		public void Save(){
