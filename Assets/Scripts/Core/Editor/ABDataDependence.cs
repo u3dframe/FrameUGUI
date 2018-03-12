@@ -28,9 +28,10 @@ namespace Kernel.Core{
 		static public bool _IsIn(string fp,string[] arrs){
 			if (arrs == null || arrs.Length <= 0)
 				return false;
+			string fpTolower = fp.ToLower ();
 			
 			for (int i = 0; i < arrs.Length; i++) {
-				if(fp.Contains (arrs [i])){
+				if(fpTolower.Contains (arrs [i])){
 					return true;
 				}
 			}
