@@ -132,7 +132,12 @@ namespace Kernel.Core{
 
 		static public void Init(string objAssetPath,bool isMust,string beDeps = ""){
 			// 相对于objAssetPath;
-			Object obj = AssetDatabase.LoadAssetAtPath<Object>(objAssetPath);
+			Object obj = null;
+			try{
+				obj = AssetDatabase.LoadAssetAtPath<Object>(objAssetPath);
+			} catch (System.Exception ex){
+				Debug.LogErrorFormat("== path = [{0}],error = {1}",objAssetPath,ex);
+			}
 			Init (obj,isMust,beDeps);
 		}
 
