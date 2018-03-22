@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Kernel
@@ -99,6 +100,9 @@ namespace Kernel
 		AssetType m_assetType = AssetType.Text;
 		System.Action<object> m_callSuccess = null;
 
+		List<WWW> m_lTimeOut = new List<WWW> ();
+		List<WWW> m_lTimeOut2Disp = new List<WWW> ();
+
 		public DownLoadFile():base(){
 		}
 
@@ -138,6 +142,8 @@ namespace Kernel
 		public void OnUpdate(){
 			if (!m_isRunning)
 				return;
+
+			_DisposeList ();
 
 			switch (m_state) {
 			case State.Init:
@@ -306,9 +312,35 @@ namespace Kernel
 		}
 
 		void _DisposeWWW(){
-			if (m_www != null) {
-				m_www.Dispose ();
-				m_www = null;
+			lock (m_lTimeOut) {
+				if (m_www != null) {
+					if (m_www.isDone) {
+						m_www.Dispose ();
+					} else {
+						m_lTimeOut.Add (m_www);
+					}
+					m_www = null;
+				}	
+			}
+		}
+
+		void _DisposeList(){
+			lock (m_lTimeOut) {
+				m_lTimeOut2Disp.Clear ();
+				WWW _www = null;
+				for (int i = 0; i < m_lTimeOut.Count; i++) {
+					_www = m_lTimeOut [i];
+					if (_www.isDone) {
+						m_lTimeOut2Disp.Add (_www);
+					}
+				}
+
+				for (int i = 0; i < m_lTimeOut2Disp.Count; i++) {
+					_www = m_lTimeOut2Disp [i];
+					m_lTimeOut.Remove (_www);
+					_www.Dispose ();
+				}
+				m_lTimeOut2Disp.Clear ();
 			}
 		}
 
