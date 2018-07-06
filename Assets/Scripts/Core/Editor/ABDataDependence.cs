@@ -112,6 +112,17 @@ namespace Kernel.Core{
 			return string.Format ("m_res = [{0}],m_isMustAB = [{1}],m_nUseCount = [{2}],m_lDependences count = [{3}]",
 				m_res,m_isMustAB,m_nUseCount,m_lDependences.Count);
 		}
+		
+		public string ToStrDeps(){
+			System.Text.StringBuilder _builder = new System.Text.StringBuilder();
+			_builder.AppendLine(m_res);
+			int _lens = m_lDependences.Count;
+			for(int i = 0; i < _lens; i++){
+				_builder.AppendLine("  " + m_lDependences[i]);
+			}
+			_builder.AppendLine();
+			return _builder.ToString();
+		}
 
 	}
 
@@ -191,12 +202,23 @@ namespace Kernel.Core{
 		static public void WriteDicToString(int limitCount = int.MaxValue){
 			System.Text.StringBuilder builder = new System.Text.StringBuilder();
 			foreach (var item in m_dic.Values) {
-				if (item.GetUsedCount () > limitCount) {
+				if (item.GetUsedCount () >= limitCount) {
 					builder.Append (item).Append ("\n");
 				}
 			}
 			GameFile.CreateFolder (GameFile.m_dirRes);
 			System.IO.File.WriteAllText (GameFile.m_dirRes + "build_res.txt", builder.ToString ());
+		}
+		
+		static public void WriteDepsToString(int limitCount = int.MaxValue){
+			System.Text.StringBuilder builder = new System.Text.StringBuilder();
+			foreach (var item in m_dic.Values) {
+				if (item.m_lDependences.Count >= limitCount) {
+					builder.Append (item.ToStrDeps());
+				}
+			}
+			GameFile.CreateFolder (GameFile.m_dirRes);
+			System.IO.File.WriteAllText (GameFile.m_dirRes + "build_res_deps.txt", builder.ToString ());
 		}
 	}
 }
